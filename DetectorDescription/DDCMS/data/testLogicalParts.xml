@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../Schema/DDLSchema.xsd">
 
-  <LogicalPartSection label="lps">
+  <LogicalPartSection label="testLogicalParts.xml">
     <LogicalPart name="trap1">
       <rMaterial name="testMaterials:Air"/>
       <rSolid name="testSolids:trap1"/>
@@ -86,6 +86,10 @@
       <rMaterial name="testMaterials:Air"/>
       <rSolid name="testSolids:trunctubs1"/>
     </LogicalPart> 
+    <LogicalPart name="trunctubs2">
+      <rMaterial name="testMaterials:Air"/>
+      <rSolid name="testSolids:trunctubs2"/>
+    </LogicalPart> 
     <LogicalPart name="momma">
       <rMaterial name="testMaterials:Air"/>
       <rSolid name="testSolids:momma"/>
@@ -123,6 +127,26 @@
       <rSolid name="testSolids:extrudedpgon"/>
     </LogicalPart>
 
+    <LogicalPart name="V_1101" category="unspecified">
+      <rSolid name="testSolids:V_1101"/>
+      <rMaterial name="materials:Air"/>
+    </LogicalPart>
+    <LogicalPart name="ZStopSpace" category="unspecified">
+      <rSolid name="testSolids:ZStopSpace"/>
+      <rMaterial name="materials:ME_free_space"/>
+    </LogicalPart>
+    <LogicalPart name="ZStopSpace1" category="unspecified">
+      <rSolid name="testSolids:ZStopSpace"/>
+      <rMaterial name="materials:ME_free_space"/>
+    </LogicalPart>
+    <LogicalPart name="ZStop_1_ZStopSpaceDivision" category="unspecified">
+      <rSolid name="testSolids:ZStop_1_ZStopSpaceDivision"/>
+      <rMaterial name="materials:Aluminium"/>
+    </LogicalPart>
+    <LogicalPart name="ZStop_2_ZStopSpaceDivision" category="unspecified">
+      <rSolid name="testSolids:ZStop_2_ZStopSpaceDivision"/>
+      <rMaterial name="materials:Aluminium"/>
+    </LogicalPart>
   </LogicalPartSection>
 
 </DDDefinition>

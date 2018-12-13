@@ -24,6 +24,7 @@
 #include "DetectorDescription/Core/interface/DDCompactView.h"
 #include "DetectorDescription/Core/interface/DDSolid.h"
 #include "DetectorDescription/Core/interface/DDMaterial.h"
+#include "DataFormats/Math/interface/GraphWalker.h"
 
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 
@@ -168,8 +169,8 @@ TGeoFromDddService::createManager(int level)
    }
 
    std::cout << "about to initialize the DDCompactView walker" << std::endl;
-   DDCompactView::walker_type             walker(viewH->graph());
-   DDCompactView::walker_type::value_type info = walker.current();
+   auto walker = math::GraphWalker<DDLogicalPart, DDPosData*>( viewH->graph(), viewH->root());
+   auto info = walker.current();
 
    // The top most item is actually the volume holding both the
    // geometry AND the magnetic field volumes!
@@ -198,7 +199,7 @@ TGeoFromDddService::createManager(int level)
 
    do
    {
-      DDCompactView::walker_type::value_type info = walker.current();
+      auto info = walker.current();
 
       if (m_verbose)
       {
@@ -437,13 +438,13 @@ TGeoFromDddService::createShape(const std::string& iName,
 	       displacement = pt.halfZ() + delta;
 	       startPhi = 90. - openingAngle/deg/2.;
 	    }
-	    std::auto_ptr<TGeoShape> trap( new TGeoTrd2(pt.name().name().c_str(),
+	    std::unique_ptr<TGeoShape> trap( new TGeoTrd2(pt.name().name().c_str(),
 							pt.x1()/cm,
 							pt.x2()/cm,
 							pt.y1()/cm,
 							pt.y2()/cm,
 							pt.halfZ()/cm) );
-	    std::auto_ptr<TGeoShape> tubs( new TGeoTubeSeg(pt.name().name().c_str(),
+	    std::unique_ptr<TGeoShape> tubs( new TGeoTubeSeg(pt.name().name().c_str(),
 							   0.,
 							   r/cm,
 							   h/cm,
@@ -468,16 +469,16 @@ TGeoFromDddService::createShape(const std::string& iName,
 	       throw cms::Exception("GeomConvert") <<"conversion to DDBooleanSolid failed";
 	    }
 	    
-	    std::auto_ptr<TGeoShape> left( createShape(boolSolid.solidA().name().fullname(),
+	    std::unique_ptr<TGeoShape> left( createShape(boolSolid.solidA().name().fullname(),
 						       boolSolid.solidA()) );
-	    std::auto_ptr<TGeoShape> right( createShape(boolSolid.solidB().name().fullname(),
+	    std::unique_ptr<TGeoShape> right( createShape(boolSolid.solidB().name().fullname(),
 							boolSolid.solidB()));
 	    if( nullptr != left.get() &&
 		nullptr != right.get() ) {
 	       TGeoSubtraction* sub = new TGeoSubtraction(left.release(),right.release(),
 							  gGeoIdentity,
 							  createPlacement(
-                                                                          *(boolSolid.rotation().matrix()),
+                                                                          boolSolid.rotation().matrix(),
                                                                           boolSolid.translation()));
 	       rSolid = new TGeoCompositeShape(iName.c_str(),
 					       sub);
@@ -491,9 +492,9 @@ TGeoFromDddService::createShape(const std::string& iName,
 	       throw cms::Exception("GeomConvert") <<"conversion to DDBooleanSolid failed";
 	    }
 	    
-	    std::auto_ptr<TGeoShape> left( createShape(boolSolid.solidA().name().fullname(),
+	    std::unique_ptr<TGeoShape> left( createShape(boolSolid.solidA().name().fullname(),
 						       boolSolid.solidA()) );
-	    std::auto_ptr<TGeoShape> right( createShape(boolSolid.solidB().name().fullname(),
+	    std::unique_ptr<TGeoShape> right( createShape(boolSolid.solidB().name().fullname(),
 							boolSolid.solidB()));
 	    //DEBUGGING
 	    //break;
@@ -502,7 +503,7 @@ TGeoFromDddService::createShape(const std::string& iName,
 	       TGeoUnion* boolS = new TGeoUnion(left.release(),right.release(),
 						gGeoIdentity,
 						createPlacement(
-                                                                *(boolSolid.rotation().matrix()),
+                                                                boolSolid.rotation().matrix(),
                                                                 boolSolid.translation()));
 	       rSolid = new TGeoCompositeShape(iName.c_str(),
 					       boolS);
@@ -516,9 +517,9 @@ TGeoFromDddService::createShape(const std::string& iName,
 	       throw cms::Exception("GeomConvert") <<"conversion to DDBooleanSolid failed";
 	    }
 	    
-	    std::auto_ptr<TGeoShape> left( createShape(boolSolid.solidA().name().fullname(),
+	    std::unique_ptr<TGeoShape> left( createShape(boolSolid.solidA().name().fullname(),
 						       boolSolid.solidA()) );
-	    std::auto_ptr<TGeoShape> right( createShape(boolSolid.solidB().name().fullname(),
+	    std::unique_ptr<TGeoShape> right( createShape(boolSolid.solidB().name().fullname(),
 							boolSolid.solidB()));
 	    if( nullptr != left.get() &&
 		nullptr != right.get() ) {
@@ -526,7 +527,7 @@ TGeoFromDddService::createShape(const std::string& iName,
 							      right.release(),
 							      gGeoIdentity,
 							      createPlacement(
-                                                                              *(boolSolid.rotation().matrix()),
+                                                                              boolSolid.rotation().matrix(),
                                                                               boolSolid.translation()));
 	       rSolid = new TGeoCompositeShape(iName.c_str(),
 					       boolS);

@@ -70,16 +70,6 @@ void DQMExample_Step1::bookHistograms(DQMStore::IBooker & ibooker_, edm::Run con
   bookHistos(ibooker_);
 }
 //
-// -------------------------------------- beginLuminosityBlock --------------------------------------------
-//
-void DQMExample_Step1::beginLuminosityBlock(edm::LuminosityBlock const& lumiSeg, 
-                                            edm::EventSetup const& context) 
-{
-  edm::LogInfo("DQMExample_Step1") <<  "DQMExample_Step1::beginLuminosityBlock" << std::endl;
-}
-
-
-//
 // -------------------------------------- Analyze --------------------------------------------
 //
 void DQMExample_Step1::analyze(edm::Event const& e, edm::EventSetup const& eSetup)
@@ -299,14 +289,6 @@ void DQMExample_Step1::analyze(edm::Event const& e, edm::EventSetup const& eSetu
       h_ePt_diff->Fill(ele1->pt()-ele1_HLT->pt());
     }
 }
-//
-// -------------------------------------- endLuminosityBlock --------------------------------------------
-//
-void DQMExample_Step1::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, edm::EventSetup const& eSetup) 
-{
-  edm::LogInfo("DQMExample_Step1") <<  "DQMExample_Step1::endLuminosityBlock" << std::endl;
-}
-
 
 //
 // -------------------------------------- endRun --------------------------------------------
@@ -413,7 +395,7 @@ bool DQMExample_Step1::MediumEle (const edm::Event & iEvent, const edm::EventSet
   iEvent.getByToken(theBSCollection_, BSHandle);
   const reco::BeamSpot BS = *BSHandle;
   
-  bool isConverted = ConversionTools::hasMatchedConversion(electron, conversions_h, BS.position());
+  bool isConverted = ConversionTools::hasMatchedConversion(electron, *conversions_h, BS.position());
   
   // default
   if(  (pt > 12.) && (fabs(eta) < 2.5) &&

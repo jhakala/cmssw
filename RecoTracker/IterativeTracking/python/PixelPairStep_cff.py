@@ -91,6 +91,7 @@ pixelPairStepHitDoublets = _hitPairEDProducer.clone(
     seedingLayers = "pixelPairStepSeedLayers",
     trackingRegions = "pixelPairStepTrackingRegions",
     produceSeedingHitSets = True,
+    maxElementTotal = 12000000,
 )
 from RecoTracker.TkSeedGenerator.seedCreatorFromRegionConsecutiveHitsEDProducer_cff import seedCreatorFromRegionConsecutiveHitsEDProducer as _seedCreatorFromRegionConsecutiveHitsEDProducer
 pixelPairStepSeeds = _seedCreatorFromRegionConsecutiveHitsEDProducer.clone(
@@ -113,9 +114,9 @@ pixelPairStepSeedsA = pixelPairStepSeeds.clone()
 import FastSimulation.Tracking.TrajectorySeedProducer_cfi
 fastSim.toReplaceWith(pixelPairStepSeeds,
                       FastSimulation.Tracking.TrajectorySeedProducer_cfi.trajectorySeedProducer.clone(
-        layerList = pixelPairStepSeedLayers.layerList.value(),
         trackingRegions = "pixelPairStepTrackingRegions",
         hitMasks = cms.InputTag("pixelPairStepMasks"),
+        seedFinderSelector = dict(layerList = pixelPairStepSeedLayers.layerList.value())
         )
 )
 
@@ -165,6 +166,21 @@ highBetaStar_2018.toModify(pixelPairStepTrackingRegionsSeedLayersB,RegionPSet = 
      ptMin = 0.05,
      originRadius = 0.2,
 ))
+#include commented lines from above in pp_on_XY eras; global seeds (A) are not used in this era b/c timing
+from Configuration.Eras.Modifier_pp_on_XeXe_2017_cff import pp_on_XeXe_2017
+from Configuration.Eras.Modifier_pp_on_AA_2018_cff import pp_on_AA_2018
+(pp_on_XeXe_2017 | pp_on_AA_2018).toModify(pixelPairStepTrackingRegionsSeedLayersB, layerList = [
+      "BPix1+BPix2", "BPix1+BPix3", "BPix1+BPix4", "BPix2+BPix3", "BPix2+BPix4","BPix3+BPix4",
+      "BPix1+FPix1_pos"    , "BPix1+FPix1_neg",
+      "BPix1+FPix2_pos"    , "BPix1+FPix2_neg",
+      "BPix1+FPix3_pos"    , "BPix1+FPix3_neg",
+      "BPix2+FPix1_pos"    , "BPix2+FPix1_neg",
+      "BPix2+FPix2_pos"    , "BPix2+FPix2_neg",
+      "BPix3+FPix1_pos"    , "BPix3+FPix1_neg",
+      "FPix1_pos+FPix2_pos", "FPix1_neg+FPix2_neg",
+      "FPix1_pos+FPix3_pos", "FPix1_neg+FPix3_neg",
+      "FPix2_pos+FPix3_pos", "FPix2_neg+FPix3_neg" 
+   ])
 
 pixelPairStepHitDoubletsB = pixelPairStepHitDoublets.clone(
     seedingLayers = "",
@@ -179,8 +195,10 @@ from RecoTracker.TkSeedGenerator.GlobalCombinedSeeds_cfi import globalCombinedSe
 _pixelPairStepSeedsMerged = _globalCombinedSeeds.clone(
     seedCollections = ["pixelPairStepSeedsA", "pixelPairStepSeedsB"],
 )
-trackingPhase1.toReplaceWith(pixelPairStepSeeds, _pixelPairStepSeedsMerged)
+(trackingPhase1 & ~fastSim).toReplaceWith(pixelPairStepSeeds, _pixelPairStepSeedsMerged)
 
+#only use region B for pp_on_XY era for timing reasons
+(pp_on_XeXe_2017 | pp_on_AA_2018).toReplaceWith(pixelPairStepSeeds, pixelPairStepSeedsB)
 
 # QUALITY CUTS DURING TRACK BUILDING
 import TrackingTools.TrajectoryFiltering.TrajectoryFilter_cff
@@ -318,6 +336,7 @@ highBetaStar_2018.toModify(pixelPairStep,qualityCuts = [-0.95,0.0,0.3])
 
 trackingPhase1.toModify(pixelPairStep, mva=dict(GBRForestLabel = 'MVASelectorPixelPairStep_Phase1'))
 fastSim.toModify(pixelPairStep, vertices = "firstStepPrimaryVerticesBeforeMixing")
+pp_on_AA_2018.toModify(pixelPairStep, qualityCuts = [-0.2, 0.0, 0.9])
 
 # For LowPU and Phase2PU140
 import RecoTracker.IterativeTracking.LowPtTripletStep_cff
@@ -405,11 +424,15 @@ trackingLowPU.toReplaceWith(PixelPairStepTask, _PixelPairStepTask_LowPU_Phase2PU
 trackingPhase2PU140.toReplaceWith(PixelPairStepTask, _PixelPairStepTask_LowPU_Phase2PU140)
 
 _PixelPairStepTask_Phase1 = PixelPairStepTask.copy()
+_PixelPairStepTask_pp_on_AA = PixelPairStepTask.copy()
 _PixelPairStepTask_Phase1.replace(pixelPairStepSeeds,cms.Task(
                               pixelPairStepSeedsA ,
                               pixelPairStepTrackingRegionsSeedLayersB,pixelPairStepHitDoubletsB,pixelPairStepSeedsB,
                               pixelPairStepSeeds))
 trackingPhase1.toReplaceWith(PixelPairStepTask, _PixelPairStepTask_Phase1)
+
+_PixelPairStepTask_pp_on_AA.replace(pixelPairStepHitDoublets, cms.Task(pixelPairStepTrackingRegionsSeedLayersB,pixelPairStepHitDoubletsB))
+(pp_on_XeXe_2017 | pp_on_AA_2018).toReplaceWith(PixelPairStepTask, _PixelPairStepTask_pp_on_AA)
 
 #fastSim
 import FastSimulation.Tracking.FastTrackerRecHitMaskProducer_cfi

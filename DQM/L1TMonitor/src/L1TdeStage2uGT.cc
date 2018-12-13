@@ -113,7 +113,7 @@ void L1TdeStage2uGT::analyze(const edm::Event & event, const edm::EventSetup & e
 
 	 // skip bits which emulator does not handle (only skiped for bx !=0)
 	 bool isBlackListed(false);
-	 BOOST_FOREACH(const std::string & pattern, triggerBlackList_) {
+	 for(auto const& pattern : triggerBlackList_) {
 	   //std::cout << pattern << std::endl;
 	   if (edm::is_glob(pattern)) {
 	     std::regex regexp(edm::glob2reg(pattern));
@@ -174,9 +174,7 @@ void L1TdeStage2uGT::analyze(const edm::Event & event, const edm::EventSetup & e
 
 }
 
-void L1TdeStage2uGT::beginLuminosityBlock(const edm::LuminosityBlock&, const edm::EventSetup&) {}
 
-void L1TdeStage2uGT::endLuminosityBlock(const edm::LuminosityBlock& lumi, const edm::EventSetup&) {}
 
 void L1TdeStage2uGT::bookHistograms(DQMStore::IBooker &ibooker, const edm::Run& run , const edm::EventSetup& es) 
 {

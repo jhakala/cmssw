@@ -49,13 +49,13 @@ tobTecStepTrackingRegionsTripl = _globalTrackingRegionFromBeamSpotFixedZ.clone(R
 
 from Configuration.Eras.Modifier_pp_on_XeXe_2017_cff import pp_on_XeXe_2017
 from Configuration.Eras.Modifier_pp_on_AA_2018_cff import pp_on_AA_2018
-from RecoTracker.TkTrackingRegions.globalTrackingRegionWithVertices_cff import globalTrackingRegionWithVertices as _globalTrackingRegionWithVertices
-for e in [pp_on_XeXe_2017, pp_on_AA_2018]:
-    e.toReplaceWith(tobTecStepTrackingRegionsTripl, 
-                    _globalTrackingRegionWithVertices.clone(RegionPSet=dict(
-                fixedError = 5.0,
-                ptMin = 2.0,
-                originRadius = 3.5
+from RecoTracker.IterativeTracking.MixedTripletStep_cff import _mixedTripletStepTrackingRegionsCommon_pp_on_HI
+(pp_on_XeXe_2017 | pp_on_AA_2018).toReplaceWith(tobTecStepTrackingRegionsTripl, 
+                _mixedTripletStepTrackingRegionsCommon_pp_on_HI.clone(RegionPSet=dict(
+                    ptMinScaling4BigEvts= False,
+                    fixedError = 5.0,
+                    ptMin = 2.0,
+                    originRadius = 3.5
                 )                                                                      )
 )
 
@@ -71,7 +71,7 @@ from RecoTracker.TkHitPairs.hitPairEDProducer_cfi import hitPairEDProducer as _h
 tobTecStepHitDoubletsTripl = _hitPairEDProducer.clone(
     seedingLayers = "tobTecStepSeedLayersTripl",
     trackingRegions = "tobTecStepTrackingRegionsTripl",
-    maxElement = 0,
+    maxElement = 50000000,
     produceIntermediateHitDoublets = True,
 )
 from RecoTracker.TkSeedGenerator.multiHitFromChi2EDProducer_cfi import multiHitFromChi2EDProducer as _multiHitFromChi2EDProducer
@@ -103,7 +103,6 @@ tobTecStepSeedsTripl = _seedCreatorFromRegionConsecutiveHitsTripletOnlyEDProduce
 #fastsim
 import FastSimulation.Tracking.TrajectorySeedProducer_cfi
 _fastSim_tobTecStepSeedsTripl = FastSimulation.Tracking.TrajectorySeedProducer_cfi.trajectorySeedProducer.clone(
-    layerList = tobTecStepSeedLayersTripl.layerList.value(),
     trackingRegions = "tobTecStepTrackingRegionsTripl",
     hitMasks = cms.InputTag("tobTecStepMasks"),
 )
@@ -111,6 +110,7 @@ from FastSimulation.Tracking.SeedingMigration import _hitSetProducerToFactoryPSe
 _fastSim_tobTecStepSeedsTripl.seedFinderSelector.MultiHitGeneratorFactory = _hitSetProducerToFactoryPSet(tobTecStepHitTripletsTripl)
 _fastSim_tobTecStepSeedsTripl.seedFinderSelector.MultiHitGeneratorFactory.SeedComparitorPSet=cms.PSet(  ComponentName = cms.string( "none" ) )
 _fastSim_tobTecStepSeedsTripl.seedFinderSelector.MultiHitGeneratorFactory.refitHits = False
+_fastSim_tobTecStepSeedsTripl.seedFinderSelector.layerList = tobTecStepSeedLayersTripl.layerList.value()
 fastSim.toReplaceWith(tobTecStepSeedsTripl,_fastSim_tobTecStepSeedsTripl)
 
 # PAIR SEEDING LAYERS
@@ -143,21 +143,22 @@ tobTecStepTrackingRegionsPair = _globalTrackingRegionFromBeamSpotFixedZ.clone(Re
     originRadius = 6.0,
 ))
 
-from RecoTracker.TkTrackingRegions.globalTrackingRegionWithVertices_cff import globalTrackingRegionWithVertices as _globalTrackingRegionWithVertices
-for e in [pp_on_XeXe_2017, pp_on_AA_2018]:
-    e.toReplaceWith(tobTecStepTrackingRegionsPair, 
-                    _globalTrackingRegionWithVertices.clone(RegionPSet=dict(
-                fixedError = 7.5,
-                ptMin = 2.0,
-                originRadius = 6.0
+(pp_on_XeXe_2017 | pp_on_AA_2018).toReplaceWith(tobTecStepTrackingRegionsPair, 
+                _mixedTripletStepTrackingRegionsCommon_pp_on_HI.clone(RegionPSet=dict(
+                    ptMinScaling4BigEvts= False,
+                    fixedError = 7.5,
+                    ptMin = 2.0,
+                    originRadius = 6.0
                 )                                                                      )
 )
+
 
 # Pair seeds
 tobTecStepHitDoubletsPair = _hitPairEDProducer.clone(
     seedingLayers = "tobTecStepSeedLayersPair",
     trackingRegions = "tobTecStepTrackingRegionsPair",
     produceSeedingHitSets = True,
+    maxElementTotal = 12000000,
 )
 from RecoTracker.TkSeedGenerator.seedCreatorFromRegionConsecutiveHitsEDProducer_cff import seedCreatorFromRegionConsecutiveHitsEDProducer as _seedCreatorFromRegionConsecutiveHitsEDProducer
 tobTecStepSeedsPair = _seedCreatorFromRegionConsecutiveHitsEDProducer.clone(
@@ -168,9 +169,9 @@ tobTecStepSeedsPair = _seedCreatorFromRegionConsecutiveHitsEDProducer.clone(
 import FastSimulation.Tracking.TrajectorySeedProducer_cfi
 fastSim.toReplaceWith(tobTecStepSeedsPair,
                       FastSimulation.Tracking.TrajectorySeedProducer_cfi.trajectorySeedProducer.clone(
-        layerList = tobTecStepSeedLayersPair.layerList.value(),
         trackingRegions = "tobTecStepTrackingRegionsPair",
         hitMasks = cms.InputTag("tobTecStepMasks"),
+        seedFinderSelector = dict(layerList = tobTecStepSeedLayersPair.layerList.value())
         )
 )
 
@@ -364,6 +365,7 @@ trackingPhase1.toReplaceWith(tobTecStep, tobTecStepClassifier1.clone(
      mva = dict(GBRForestLabel = 'MVASelectorTobTecStep_Phase1'),
      qualityCuts = [-0.6,-0.45,-0.3],
 ))
+pp_on_AA_2018.toModify(tobTecStep, qualityCuts = [-0.6,-0.3,0.7])
 
 import RecoTracker.FinalTrackSelectors.multiTrackSelector_cfi
 trackingLowPU.toReplaceWith(tobTecStep, RecoTracker.FinalTrackSelectors.multiTrackSelector_cfi.multiTrackSelector.clone(

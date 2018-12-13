@@ -11,6 +11,7 @@
 #include "SimCalorimetry/HGCalSimProducers/interface/HGCEEDigitizer.h"
 #include "SimCalorimetry/HGCalSimProducers/interface/HGCHEfrontDigitizer.h"
 #include "SimCalorimetry/HGCalSimProducers/interface/HGCHEbackDigitizer.h"
+#include "SimCalorimetry/HGCalSimProducers/interface/HFNoseDigitizer.h"
 #include "DataFormats/HGCDigi/interface/HGCDigiCollections.h"
 #include "DataFormats/HGCDigi/interface/PHGCSimAccumulator.h"
 #include "FWCore/Framework/interface/ESHandle.h"
@@ -67,10 +68,16 @@ public:
 
   /**
    */
-  bool producesEEDigis()       { return (mySubDet_==ForwardSubdetector::HGCEE);  }
-  bool producesHEfrontDigis()  { return (mySubDet_==ForwardSubdetector::HGCHEF); }
-  bool producesHEbackDigis()   { return (mySubDet_==ForwardSubdetector::HGCHEB); }
+  bool producesEEDigis()       { 
+    return ((mySubDet_==ForwardSubdetector::HGCEE)||(myDet_==DetId::HGCalEE)); }
+  bool producesHEfrontDigis()  { 
+    return ((mySubDet_==ForwardSubdetector::HGCHEF)||(myDet_==DetId::HGCalHSi)); }
+  bool producesHEbackDigis()   { 
+    return ((mySubDet_==ForwardSubdetector::HGCHEB)||(myDet_==DetId::HGCalHSc)); }
+  bool producesHFNoseDigis()       { 
+    return ((mySubDet_==ForwardSubdetector::HFNose)&&(myDet_==DetId::Forward));}
   std::string digiCollection() { return digiCollection_; }
+  int geometryType() { return geometryType_; }
 
   /**
       @short actions at the start/end of run
@@ -79,9 +86,15 @@ public:
   void endRun();
 
 private :
-  
+
+  uint32_t getType() const;
+  bool     getWeight(std::array<float,3>& tdcForToAOnset, float& keV2fC) const;
+
   //input/output names
   std::string hitCollection_,digiCollection_;
+
+  //geometry type (0 pre-TDR; 1 TDR)
+  int geometryType_;
 
   //digitization type (it's up to the specializations to decide it's meaning)
   int digitizationType_;
@@ -100,17 +113,22 @@ private :
   std::unique_ptr<hgc::HGCSimHitDataAccumulator> simHitAccumulator_;  
   void resetSimHitDataAccumulator();
 
+  //debug position
+  void checkPosition(const HGCalDigiCollection* digis) const;
+
   //digitizers
   std::unique_ptr<HGCEEDigitizer>      theHGCEEDigitizer_;
   std::unique_ptr<HGCHEbackDigitizer>  theHGCHEbackDigitizer_;
   std::unique_ptr<HGCHEfrontDigitizer> theHGCHEfrontDigitizer_;
+  std::unique_ptr<HFNoseDigitizer>     theHFNoseDigitizer_;
   
   //geometries
   std::unordered_set<DetId> validIds_;
   const HGCalGeometry* gHGCal_;
   const HcalGeometry* gHcal_;
 
-  //subdetector id
+  //detector and subdetector id
+  DetId::Detector    myDet_;
   ForwardSubdetector mySubDet_;
 
   //misc switches
@@ -123,7 +141,7 @@ private :
   float tofDelay_;
 
   //average occupancies
-  std::array<double,3> averageOccupancies_;
+  std::array<double,4> averageOccupancies_;
   uint32_t nEvents_;
 
   std::vector<float> cce_;

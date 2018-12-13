@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -8,6 +9,7 @@
 
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 #include "Geometry/HGCalCommonData/interface/HGCalParameters.h"
+#include "Geometry/HGCalCommonData/interface/HGCalWaferIndex.h"
 
 class HGCalParameterTester : public edm::one::EDAnalyzer<> {
 
@@ -21,9 +23,13 @@ public:
 private:
   template<typename T> void myPrint(std::string const& s, 
 				    std::vector<T> const& obj, int n) const;
+  void myPrint(std::string const& s, std::vector<double> const& obj1,
+	       std::vector<double> const& obj2, int n) const;
   void myPrint(std::string const& s, HGCalParameters::wafer_map const& obj,
 	       int n) const;
   void printTrform(edm::ESHandle<HGCalParameters> const&) const;
+  void printWaferType(edm::ESHandle<HGCalParameters> const& phgp) const;
+
   const std::string name_;
   const int         mode_;
 };
@@ -43,15 +49,18 @@ void HGCalParameterTester::analyze(const edm::Event& iEvent,
 
   std::cout << phgp->name_ << "\n";
   if (mode_ == 0) {
-    std::cout << "WaferR_: "   << phgp->waferR_   << "\n";
-    std::cout << "SlopeMin_: " << phgp->slopeMin_ << "\n";
-    std::cout << "nCells_: "   << phgp->nCells_   << "\n";
-    std::cout << "nSectors_: " << phgp->nSectors_ << "\n";
-    std::cout << "mode_: "     << phgp->mode_     << "\n";
+    std::cout << "DetectorType: "    << phgp->detectorType_    << "\n";
+    std::cout << "WaferR_: "         << phgp->waferR_          << "\n";
+    std::cout << "nCells_: "         << phgp->nCells_          << "\n";
+    std::cout << "nSectors_: "       << phgp->nSectors_        << "\n";
+    std::cout << "FirstLayer: "      << phgp->firstLayer_      << "\n";
+    std::cout << "FirstMixedLayer: " << phgp->firstMixedLayer_ << "\n";
+    std::cout << "mode_: "           << phgp->mode_            << "\n";
 
     myPrint("CellSize",          phgp->cellSize_,          10);
+    myPrint("slopeMin",          phgp->slopeMin_,          10);
     myPrint("slopeTop",          phgp->slopeTop_,          10);  
-    myPrint("zFront",            phgp->zFront_,            10);
+    myPrint("zFrontTop",         phgp->zFrontTop_,         10);
     myPrint("rMaxFront",         phgp->rMaxFront_,         10);
     myPrint("zRanges",           phgp->zRanges_,           10);  
     myPrint("moduleBlS",         phgp->moduleBlS_,         10);  
@@ -81,13 +90,10 @@ void HGCalParameterTester::analyze(const edm::Event& iEvent,
     myPrint("zLayerHex",         phgp->zLayerHex_,         10);  
     myPrint("rMinLayHex",        phgp->rMinLayHex_,        10);  
     myPrint("rMaxLayHex",        phgp->rMaxLayHex_,        10);  
-    myPrint("waferPosX",         phgp->waferPosX_,         10);  
-    myPrint("waferPosY",         phgp->waferPosY_,         10);
-    myPrint("cellFineX",         phgp->cellFineX_,         10);  
-    myPrint("cellFineY",         phgp->cellFineY_,         10);  
+    myPrint("waferPos",          phgp->waferPosX_,         phgp->waferPosY_,4);
+    myPrint("cellFine",          phgp->cellFineX_,         phgp->cellFineY_,4);
     myPrint("cellFineHalf",      phgp->cellFineHalf_,      10);  
-    myPrint("cellCoarseX",       phgp->cellCoarseX_,       10);  
-    myPrint("cellCoarseY",       phgp->cellCoarseY_,       10);  
+    myPrint("cellCoarse",        phgp->cellCoarseX_,       phgp->cellCoarseY_,4);  
     myPrint("cellCoarseHalf",    phgp->cellCoarseHalf_,    10);
     myPrint("boundR",            phgp->boundR_,            10);  
     myPrint("moduleLayS",        phgp->moduleLayS_,        10);  
@@ -106,31 +112,37 @@ void HGCalParameterTester::analyze(const edm::Event& iEvent,
     myPrint("layerGroupO",       phgp->layerGroupO_,       18);
     printTrform(phgp);
     myPrint("levelTop",          phgp->levelT_,            10);
+    printWaferType(phgp);
 
   } else if (mode_ == 1) {
 
-    std::cout << "SlopeMin_: "   << phgp->slopeMin_ << "\n";
+    std::cout << "DetectorType: "    << phgp->detectorType_    << "\n";
     std::cout << "Wafer Parameters: " << phgp->waferSize_ << ":"
 	      << phgp->waferR_  << ":" << phgp->waferThick_ << ":"
 	      << phgp->sensorSeparation_ << ":" << phgp->mouseBite_ << "\n";
     std::cout << "nCells_: " << phgp->nCellsFine_  << ":" 
 	      << phgp->nCellsCoarse_ << "\n";
-    std::cout << "nSectors_: "  << phgp->nSectors_ << "\n";
-    std::cout << "FirstLayer: " << phgp->firstLayer_ << "\n";
-    std::cout << "mode_: "      << phgp->mode_     << "\n";
-    std::cout << "waferUVMax: " << phgp->waferUVMax_ << "\n";
+    std::cout << "nSectors_: "       << phgp->nSectors_        << "\n";
+    std::cout << "FirstLayer: "      << phgp->firstLayer_      << "\n";
+    std::cout << "FirstMixedLayer: " << phgp->firstMixedLayer_ << "\n";
+    std::cout << "mode_: "           << phgp->mode_            << "\n";
+    std::cout << "waferUVMax: "      << phgp->waferUVMax_      << "\n";
 
     myPrint("waferUVMaxLayer",   phgp->waferUVMaxLayer_,   20);
     myPrint("CellThickness",     phgp->cellThickness_,     10);
     myPrint("radius100to200",    phgp->radius100to200_,    10);  
     myPrint("radius200to300",    phgp->radius200to300_,    10);
-    std::cout << "nCornerCut " << phgp->nCornerCut_ << "  zMinForRad "
-	      << phgp->zMinForRad_ << "\n";
+    std::cout << "choiceType " << phgp->choiceType_ << "   nCornerCut " 
+	      << phgp->nCornerCut_ << "  fracAreaMin " << phgp->fracAreaMin_
+	      << "  zMinForRad " << phgp->zMinForRad_ << "\n";
   
     myPrint("CellSize",          phgp->cellSize_,          10);
     myPrint("radiusMixBoundary", phgp->radiusMixBoundary_, 10);  
+    myPrint("slopeMin",          phgp->slopeMin_,          10);
+    myPrint("zFrontMin",         phgp->zFrontMin_,         10);
+    myPrint("rMinFront",         phgp->rMinFront_,         10);
     myPrint("slopeTop",          phgp->slopeTop_,          10);  
-    myPrint("zFront",            phgp->zFront_,            10);
+    myPrint("zFrontTop",         phgp->zFrontTop_,         10);
     myPrint("rMaxFront",         phgp->rMaxFront_,         10);
     myPrint("zRanges",           phgp->zRanges_,           10);  
     myPrint("moduleBlS",         phgp->moduleBlS_,         10);  
@@ -160,14 +172,11 @@ void HGCalParameterTester::analyze(const edm::Event& iEvent,
     myPrint("zLayerHex",         phgp->zLayerHex_,         10);  
     myPrint("rMinLayHex",        phgp->rMinLayHex_,        10);  
     myPrint("rMaxLayHex",        phgp->rMaxLayHex_,        10);  
-    myPrint("waferPosX",         phgp->waferPosX_,         10);  
-    myPrint("waferPosY",         phgp->waferPosY_,         10);
+    myPrint("waferPos",          phgp->waferPosX_,         phgp->waferPosY_,4);
     myPrint("cellFineIndex",     phgp->cellFineIndex_,     10);  
-    myPrint("cellFineX",         phgp->cellFineX_,         10);  
-    myPrint("cellFineY",         phgp->cellFineY_,         10);  
+    myPrint("cellFine",          phgp->cellFineX_,         phgp->cellFineY_,4);
     myPrint("cellCoarseIndex",   phgp->cellCoarseIndex_,   10);
-    myPrint("cellCoarseX",       phgp->cellCoarseX_,       10);
-    myPrint("cellCoarseY",       phgp->cellCoarseY_,       10);  
+    myPrint("cellCoarse" ,       phgp->cellCoarseX_,       phgp->cellCoarseY_,4);  
     myPrint("layer",             phgp->layer_,             18);  
     myPrint("layerIndex",        phgp->layerIndex_,        18);  
     myPrint("depth",             phgp->depth_,             18);
@@ -177,31 +186,40 @@ void HGCalParameterTester::analyze(const edm::Event& iEvent,
     myPrint("waferTypeL",        phgp->waferTypeL_,        20);
     printTrform(phgp);
     myPrint("levelTop",          phgp->levelT_,            10);
+    printWaferType(phgp);
 
   } else {
 
-    std::cout << "SlopeMin_: "  << phgp->slopeMin_   << "\n";
+    std::cout << "DetectorType: "    << phgp->detectorType_    << "\n";
     std::cout << "nCells_: " << phgp->nCellsFine_  << ":" 
 	      << phgp->nCellsCoarse_ << "\n";
-    std::cout << "EtaMinBH: "   << phgp->etaMinBH_   << "\n";
-    std::cout << "FirstLayer: " << phgp->firstLayer_ << "\n";
-    std::cout << "mode_: "      << phgp->mode_       << "\n";
-    std::cout << "waferUVMax: " << phgp->waferUVMax_ << "\n";
-    std::cout << "nSectors_: "  << phgp->nSectors_   << "\n";
+    std::cout << "MinTileZize: "     << phgp->minTileSize_     << "\n";
+    std::cout << "FirstLayer: "      << phgp->firstLayer_      << "\n";
+    std::cout << "FirstMixedLayer: " << phgp->firstMixedLayer_ << "\n";
+    std::cout << "mode_: "           << phgp->mode_            << "\n";
+    std::cout << "waferUVMax: "      << phgp->waferUVMax_      << "\n";
+    std::cout << "nSectors_: "       << phgp->nSectors_        << "\n";
     std::cout << "nCells_: " << phgp->nCellsFine_  << ":" 
 	      << phgp->nCellsCoarse_ << "\n";
   
     myPrint("CellSize",          phgp->cellSize_,          10);
     myPrint("radiusMixBoundary", phgp->radiusMixBoundary_, 10);  
     myPrint("nPhiBinBH",         phgp->nPhiBinBH_,         18);  
-    myPrint("dPhiEtaBH",         phgp->dPhiEtaBH_,         10);  
+    myPrint("layerFrontBH",      phgp->layerFrontBH_,      10);  
+    myPrint("rMinLayerBH",       phgp->rMinLayerBH_,       10);  
+    myPrint("slopeMin",          phgp->slopeMin_,          10);
+    myPrint("zFrontMin",         phgp->zFrontMin_,         10);
+    myPrint("rMinFront",         phgp->rMinFront_,         10);
+    myPrint("radiusLayer[0]",    phgp->radiusLayer_[0],    10);  
+    myPrint("radiusLayer[1]",    phgp->radiusLayer_[1],    10);  
+    myPrint("iradMinBH",         phgp->iradMinBH_,         20);  
+    myPrint("iradMaxBH",         phgp->iradMaxBH_,         20);  
     myPrint("slopeTop",          phgp->slopeTop_,          10);  
-    myPrint("zFront",            phgp->zFront_,            10);
+    myPrint("zFrontTop",         phgp->zFrontTop_,         10);
     myPrint("rMaxFront",         phgp->rMaxFront_,         10);
     myPrint("zRanges",           phgp->zRanges_,           10);  
     myPrint("firstModule",       phgp->firstModule_,       10);
     myPrint("lastModule",        phgp->lastModule_,        10);  
-    myPrint("iEtaMinBH",         phgp->iEtaMinBH_,         20);  
     myPrint("moduleBlS",         phgp->moduleBlS_,         10);  
     myPrint("moduleTlS",         phgp->moduleTlS_,         10);  
     myPrint("moduleHS",          phgp->moduleHS_,          10);
@@ -236,6 +254,7 @@ void HGCalParameterTester::analyze(const edm::Event& iEvent,
     myPrint("depthLayerF",       phgp->depthLayerF_,       18);
     printTrform(phgp);
     myPrint("levelTop",          phgp->levelT_,            10);
+    printWaferType(phgp);
   }
 
   auto finish = std::chrono::high_resolution_clock::now();
@@ -250,6 +269,19 @@ void HGCalParameterTester::myPrint(std::string const& s,
   std::cout << s << " with " << obj.size() << " elements\n";
   for (auto const& it : obj) {
     std::cout << it << ", "; ++k; 
+    if (k == n) { std::cout << "\n"; k = 0;}
+  }
+  if (k > 0) std::cout << "\n";
+}
+
+void HGCalParameterTester::myPrint(std::string const& s, 
+				   std::vector<double> const& obj1,
+				   std::vector<double> const& obj2,
+				   int n) const {
+  int k(0);
+  std::cout << s << " with " << obj1.size() << " elements\n";
+  for (unsigned int k1=0; k1<obj1.size(); ++k1) {
+    std::cout << "(" << obj1[k1] << ", " << obj2[k1] << ") "; ++k; 
     if (k == n) { std::cout << "\n"; k = 0;}
   }
   if (k > 0) std::cout << "\n";
@@ -278,5 +310,34 @@ void HGCalParameterTester::printTrform(edm::ESHandle<HGCalParameters> const& phg
   }
   if (k > 0) std::cout << "\n";
 }
+
+void HGCalParameterTester::printWaferType(edm::ESHandle<HGCalParameters> const& phgp) const {
+  int k(0);
+  std::cout << "waferTypes with " << phgp->waferTypes_.size() << " elements\n";
+  std::map<std::pair<int,int>,int> kounts;
+  std::map<std::pair<int,int>,int>::iterator itr;
+  for (auto const& it : phgp->waferTypes_) {
+    std::cout << " [" << k << "] " << HGCalWaferIndex::waferLayer(it.first);
+       if (HGCalWaferIndex::waferFormat(it.first)) {
+      std::cout << ":" << HGCalWaferIndex::waferU(it.first) << ":"
+		<< HGCalWaferIndex::waferV(it.first);
+    } else {
+      std::cout << ":" << HGCalWaferIndex::waferCopy(it.first);
+    }
+    std::cout << " ==> (" << (it.second).first << ":" << (it.second).second
+	      << ")" << std::endl;
+    itr = kounts.find(it.second);
+    if (itr == kounts.end()) kounts[it.second] = 1;
+    else                     ++(itr->second);
+    ++k;
+  }
+  if (!kounts.empty()) {
+    std::cout << "Summary of waferTypes ==========================\n";
+    for (itr = kounts.begin(); itr != kounts.end(); ++itr)
+      std::cout << "Type (" << (itr->first).first << ":" << (itr->first).second
+		<< ") Kount " << itr->second << std::endl;
+  }
+}
+      
 
 DEFINE_FWK_MODULE(HGCalParameterTester);

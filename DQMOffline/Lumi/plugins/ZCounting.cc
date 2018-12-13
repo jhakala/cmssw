@@ -12,7 +12,6 @@
 #include "DQMOffline/Lumi/interface/TTrigger.h"
 #include "DQMOffline/Lumi/interface/TriggerTools.h"
 
-#include <boost/foreach.hpp>
 #include <TLorentzVector.h>
 
 #include "DQMOffline/Lumi/plugins/ZCounting.h"
@@ -172,14 +171,6 @@ void ZCounting::bookHistograms(DQMStore::IBooker & ibooker_, edm::Run const &, e
   h_ee_yield_Z_ebee       = ibooker_.book1D("h_ee_yield_Z_ebee", "h_ee_yield_Z_ebee", LumiBin_, LumiMin_, LumiMax_);
   h_ee_yield_Z_eeee       = ibooker_.book1D("h_ee_yield_Z_eeee", "h_ee_yield_Z_eeee", LumiBin_, LumiMin_, LumiMax_);
 }
-//
-// -------------------------------------- beginLuminosityBlock --------------------------------------------
-//
-void ZCounting::beginLuminosityBlock(edm::LuminosityBlock const& lumiSeg, edm::EventSetup const& context) 
-{
-  edm::LogInfo("ZCounting") <<  "ZCounting::beginLuminosityBlock" << std::endl;
-}
-
 
 //
 // -------------------------------------- Analyze --------------------------------------------
@@ -657,14 +648,6 @@ bool ZCounting::ele_tag_selection(double pt, double abseta){
   return true;
 }
 //
-// -------------------------------------- endLuminosityBlock --------------------------------------------
-//
-void ZCounting::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, edm::EventSetup const& eSetup)
-{
-  edm::LogInfo("ZCounting") <<  "ZCounting::endLuminosityBlock" << std::endl;
-}
-
-//
 // -------------------------------------- functions --------------------------------------------
 //
 
@@ -679,7 +662,7 @@ void ZCounting::initHLT(const edm::TriggerResults& result, const edm::TriggerNam
       if(matches.empty()) {
         edm::LogWarning("ZCounting") << "requested pattern [" << pattern << "] does not match any HLT paths" << std::endl;
       } else {
-        BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches) {
+        for(auto const& match : matches) {
           fTrigger->fRecords[irec].hltPathName = *match;
         }
       }

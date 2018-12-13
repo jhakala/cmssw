@@ -29,18 +29,18 @@ CTPPSGeometry::build( const DetGeomDesc* gD )
     buffer.pop_front();
 
     // check if it is a sensor
-    if ( d->name().name() == DDD_TOTEM_RP_SENSOR_NAME
-      || std::regex_match( d->name().name(), std::regex( DDD_TOTEM_TIMING_SENSOR_TMPL ) )
-      || d->name().name() == DDD_CTPPS_DIAMONDS_SEGMENT_NAME
-      || d->name().name() == DDD_CTPPS_UFSD_SEGMENT_NAME
-      || d->name().name() == DDD_CTPPS_PIXELS_SENSOR_NAME )
+    if ( d->name() == DDD_TOTEM_RP_SENSOR_NAME
+      || std::regex_match( d->name(), std::regex( DDD_TOTEM_TIMING_SENSOR_TMPL ) )
+      || d->name() == DDD_CTPPS_DIAMONDS_SEGMENT_NAME
+      || d->name() == DDD_CTPPS_UFSD_SEGMENT_NAME
+      || d->name() == DDD_CTPPS_PIXELS_SENSOR_NAME )
       addSensor( d->geographicalID(), d );
 
     // check if it is a RP
-    if ( d->name().name() == DDD_TOTEM_RP_RP_NAME
-      || d->name().name() == DDD_TOTEM_TIMING_RP_NAME
-      || d->name().name() == DDD_CTPPS_DIAMONDS_RP_NAME
-      || d->name().name() == DDD_CTPPS_PIXELS_RP_NAME )
+    if ( d->name() == DDD_TOTEM_RP_RP_NAME
+      || d->name() == DDD_TOTEM_TIMING_RP_NAME
+      || d->name() == DDD_CTPPS_DIAMONDS_RP_NAME
+      || d->name() == DDD_CTPPS_PIXELS_RP_NAME )
       addRP( d->geographicalID(), d );
 
     for ( const auto& comp : d->components() )
@@ -87,11 +87,23 @@ CTPPSGeometry::addRP( unsigned int id, const DetGeomDesc*& gD )
 const DetGeomDesc*
 CTPPSGeometry::getSensor( unsigned int id ) const
 {
-  auto it = sensors_map_.find( id );
-  if ( it == sensors_map_.end() )
+  auto g = getSensorNoThrow(id);
+  if(nullptr ==g) {
     throw cms::Exception("CTPPSGeometry") << "Not found detector with ID " << id << ", i.e. "
       << CTPPSDetId( id );
+  }
+  return g;
+}
 
+//----------------------------------------------------------------------------------------------------
+
+const DetGeomDesc*
+CTPPSGeometry::getSensorNoThrow( unsigned int id ) const noexcept
+{
+  auto it = sensors_map_.find( id );
+  if ( it == sensors_map_.end() ) {
+    return nullptr;
+  }
   return it->second;
 }
 
@@ -100,10 +112,23 @@ CTPPSGeometry::getSensor( unsigned int id ) const
 const DetGeomDesc*
 CTPPSGeometry::getRP( unsigned int id ) const
 {
-  auto it = rps_map_.find( id );
-  if ( it == rps_map_.end() )
+  auto rp = getRPNoThrow(id);
+  if(nullptr == rp) {     
     throw cms::Exception("CTPPSGeometry") << "Not found RP device with ID " << id << ", i.e. "
       << CTPPSDetId( id );
+  }
+  return rp;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+const DetGeomDesc*
+CTPPSGeometry::getRPNoThrow( unsigned int id ) const noexcept
+{
+  auto it = rps_map_.find( id );
+  if ( it == rps_map_.end() ) {
+    return nullptr;
+  }
 
   return it->second;
 }

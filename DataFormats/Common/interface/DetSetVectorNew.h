@@ -57,10 +57,23 @@ namespace edmNew {
 
       DetSetVectorTrans(): m_filling(false), m_dataSize(0){}
       DetSetVectorTrans& operator=(const DetSetVectorTrans&) = delete;
-      DetSetVectorTrans(const DetSetVectorTrans&) = delete;
-      DetSetVectorTrans(DetSetVectorTrans&& rh) { // can't be default because of atomics
+
+      DetSetVectorTrans(const DetSetVectorTrans& rh): // can't be default because of atomics
+        m_filling(false) {
         // better no one is filling...
-        assert(m_filling==false); assert(rh.m_filling==false);
+        assert(rh.m_filling==false);
+        m_getter = rh.m_getter;
+#ifdef DSVN_USE_ATOMIC
+        m_dataSize.store(rh.m_dataSize.load());
+#else
+        m_dataSize = rh.m_dataSize;
+#endif
+      }
+
+      DetSetVectorTrans(DetSetVectorTrans&& rh): // can't be default because of atomics
+        m_filling(false) {
+        // better no one is filling...
+        assert(rh.m_filling==false);
         m_getter = std::move(rh.m_getter);
 #ifdef DSVN_USE_ATOMIC
         m_dataSize.store(rh.m_dataSize.exchange(m_dataSize.load()));
@@ -397,15 +410,18 @@ namespace edmNew {
     friend class TSFastFiller;
     friend class edmNew::DetSet<T>;
 
-    class FindForDetSetVector : public std::binary_function<const edmNew::DetSetVector<T>&, unsigned int, const T*> {
+    class FindForDetSetVector {
     public:
-      typedef FindForDetSetVector self;
-      typename self::result_type operator()(typename self::first_argument_type iContainer, typename self::second_argument_type iIndex)
+      using first_argument_type  = const edmNew::DetSetVector<T>&;
+      using second_argument_type = unsigned int;
+      using result_type          = const T*;
+
+      result_type operator()(first_argument_type iContainer, second_argument_type iIndex)
 #ifdef DSVN_USE_ATOMIC
       {
         bool expected=false;
         while (!iContainer.m_filling.compare_exchange_weak(expected,true,std::memory_order_acq_rel))  { expected=false; nanosleep(nullptr,nullptr);}
-        typename self::result_type item =  &(iContainer.m_data[iIndex]);
+        result_type item =  &(iContainer.m_data[iIndex]);
         assert(iContainer.m_filling==true);
         iContainer.m_filling = false;
         return item;
@@ -429,7 +445,11 @@ namespace edmNew {
 
     // default or delete is the same...
     DetSetVector& operator=(const DetSetVector&) = delete;
-    DetSetVector(const DetSetVector&) = delete;
+    // Implement copy constructor because of a (possibly temporary)
+    // need in heterogeneous framework prototyping. In general this
+    // class is still supposed to be non-copyable, so to prevent
+    // accidental copying the assignment operator is left deleted.
+    DetSetVector(const DetSetVector&) = default;
     DetSetVector(DetSetVector&&) = default;
     DetSetVector& operator=(DetSetVector&&) = default;
 
@@ -718,9 +738,12 @@ namespace edm {
     /* Probably this one is not that useful .... */
     namespace refhelper {
         template<typename T>
-            struct FindSetForNewDetSetVector : public std::binary_function<const edmNew::DetSetVector<T>&, unsigned int, edmNew::DetSet<T> > {
-                typedef FindSetForNewDetSetVector<T> self;
-                typename self::result_type operator()(typename self::first_argument_type iContainer, typename self::second_argument_type iIndex) {
+            struct FindSetForNewDetSetVector {
+                using first_argument_type  = const edmNew::DetSetVector<T>&;
+                using second_argument_type = unsigned int;
+                using result_type          = edmNew::DetSet<T>;
+
+                result_type operator()(first_argument_type iContainer, second_argument_type iIndex) {
                     return &(iContainer[iIndex]);
                 }
             };
