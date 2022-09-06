@@ -339,6 +339,9 @@ void EcalDigiProducer::accumulateCaloHits(HitsHandle const &ebHandle,
     if (m_apdSeparateDigi) {
       m_APDDigitizer->add(*ebHandle.product(), bunchCrossing, randomEngine_);
     }
+    if (m_componentSeparateDigi) {
+      m_ComponentDigitizer->add(*ebHandle.product(), bunchCrossing, randomEngine_);
+    }
   }
 
   if (m_doEE && eeHandle.isValid()) {
