@@ -7,9 +7,9 @@
 class ComponentShape : public EcalShapeBase {
 public:
   // useDB = false
-  ComponentShape(int shapeIndex) : EcalShapeBase(false), m_shapeIndex(shapeIndex) { std::cout << "ComponentShape constructor 1 called" << std::endl; buildMe(); }
+  ComponentShape(int shapeIndex) : EcalShapeBase(false), m_shapeIndex(shapeIndex) { buildMe(); }
   // useDB = true, buildMe is executed when setEventSetup and DB conditions are available
-  ComponentShape(int shapeIndex, edm::ConsumesCollector iC) : EcalShapeBase(false), espsToken_(iC.esConsumes()), m_shapeIndex(shapeIndex) { std::cout << "ComponentShape constructor 2 called" << std::endl; buildMe(); } // TODO change this to actually use database
+  ComponentShape(int shapeIndex, edm::ConsumesCollector iC) : EcalShapeBase(false), espsToken_(iC.esConsumes()), m_shapeIndex(shapeIndex) {  buildMe(); } // TODO change this to actually use database
 
 protected:
   void fillShape(float& time_interval,
