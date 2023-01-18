@@ -23,10 +23,14 @@ void ComponentShapeCollection::fillCollection() {
 }
 
 const ComponentShape* ComponentShapeCollection::at(int depthIndex) const {
-  if (0 > toDepthBin(depthIndex) || toDepthBin(depthIndex) > m_nDepthBins) throw cms::Exception("ComponentShape:: invalid depth requested");
+  if (0 > toDepthBin(depthIndex) || toDepthBin(depthIndex) > m_nDepthBins-1) throw cms::Exception("ComponentShape:: invalid depth requested");
   return m_shapeArr[toDepthBin(depthIndex)];
 }
 
 int ComponentShapeCollection::toDepthBin(int index) {
   return index>>3;
+}
+
+int ComponentShapeCollection::maxDepthBin() {
+  return m_nDepthBins-1;
 }

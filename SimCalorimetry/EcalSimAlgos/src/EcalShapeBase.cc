@@ -119,7 +119,7 @@ double EcalShapeBase::derivative(double aTime) const {
   return (m_denseArraySize == index ? 0 : m_deriv[index]);
 }
 
-void EcalShapeBase::m_shape_print(const char* fileName) {
+void EcalShapeBase::m_shape_print(const char* fileName) const {
   std::ofstream fs;
   fs.open(fileName);
   for (auto i : m_shape)

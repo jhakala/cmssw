@@ -25,16 +25,19 @@ public:
   const float& sample(unsigned int i) const { return data_[i]; }
 
   void setSize(unsigned int size);
+  void setWaveform(float* waveform);
   void setSample(unsigned int i, const float sam) { data_[i] = sam; }
   void setSampleOfInterest(int i) { sampleOfInterest_ = i; }
 
   /// Gets the BX==0 sample. If =-1 then it means that only OOT hits are present
   int sampleOfInterest() const { return sampleOfInterest_; }
+  std::vector<float> waveform() const { return waveform_; }
 
 private:
   DetId id_;
   unsigned int size_;
   int sampleOfInterest_;
+  std::vector<float> waveform_;
   std::vector<float> data_;
 };
 

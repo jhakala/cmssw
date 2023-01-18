@@ -363,7 +363,7 @@ void EcalDigiProducer::accumulate(edm::Event const &e, edm::EventSetup const &ev
   if (m_doEB) {
     m_EBShape.setEventSetup(eventSetup);
     m_APDShape.setEventSetup(eventSetup);
-  m_ComponentShapes.setEventSetup(eventSetup);
+    m_ComponentShapes.setEventSetup(eventSetup);
   }
 
   const edm::Handle<std::vector<PCaloHit>> &eeHandle = e.getHandle(m_HitsEEToken_);

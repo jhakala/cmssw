@@ -51,6 +51,7 @@ void ComponentShape::fillShape(float& time_interval,
   else {
     aVec.reserve(500);
     // array for phase I
+    /*
     float dispersion_[23][500] = { 
        { 
                        0,  1.28779e-05,  7.60415e-05,  0.000261491,  0.000721171, 
@@ -2399,8 +2400,9 @@ void ComponentShape::fillShape(float& time_interval,
              0.000906733,  0.000893809,  0.000881096,   0.00086859,  0.000856288
        }
     }; 
+    */
     // array for phase II
-    /*float dispersion_[23][500] = { 
+    float dispersion_[23][500] = { 
        { 
                        0,  0.000181655,  0.000665231,   0.00517496,    0.0285866, 
                0.0833064,     0.159262,     0.243352,     0.342113,     0.462765, 
@@ -4747,7 +4749,7 @@ void ComponentShape::fillShape(float& time_interval,
              3.60863e-05,  3.57272e-05,  3.53717e-05,  3.50197e-05,  3.46713e-05, 
              3.43263e-05,  3.39848e-05,  3.36466e-05,  3.33118e-05,  3.29804e-05
        }
-    };*/ 
+    }; 
 
     for (unsigned int i(0); i != 500; ++i)
       aVec.push_back(double(dispersion_[m_shapeIndex][i]));

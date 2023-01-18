@@ -20,6 +20,7 @@ public:
 
   const ComponentShape* at(int depthIndex) const;
   static int toDepthBin(int index);
+  static int maxDepthBin();
 
 protected:
   void buildMe(const edm::EventSetup* es = nullptr);

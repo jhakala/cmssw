@@ -20,12 +20,12 @@
 
 #include <iostream>
 
-//#define ecal_time_debug 1
+// #define ecal_time_debug 1
 
 const float EcalTimeMapDigitizer::MIN_ENERGY_THRESHOLD =
     5e-5;  //50 KeV threshold to consider a valid hit in the timing detector
 
-EcalTimeMapDigitizer::EcalTimeMapDigitizer(EcalSubdetector myDet) : m_subDet(myDet), m_geometry(nullptr) {
+EcalTimeMapDigitizer::EcalTimeMapDigitizer(EcalSubdetector myDet, ComponentShapeCollection* componentShapes) : m_subDet(myDet), m_ComponentShapes(componentShapes), m_geometry(nullptr) {
   //    edm::Service<edm::RandomNumberGenerator> rng ;
   //    if ( !rng.isAvailable() )
   //    {
@@ -75,20 +75,19 @@ EcalTimeMapDigitizer::~EcalTimeMapDigitizer() {}
 
 void EcalTimeMapDigitizer::add(const std::vector<PCaloHit>& hits, int bunchCrossing) {
   if (bunchCrossing >= m_minBunch && bunchCrossing <= m_maxBunch) {
+    int iHit(0);
     for (std::vector<PCaloHit>::const_iterator it = hits.begin(), itEnd = hits.end(); it != itEnd; ++it) {
       //here goes the map logic
 
       if (edm::isNotFinite((*it).time()))
         continue;
 
+      if ((*it).energy() < MIN_ENERGY_THRESHOLD)  //apply a minimal cut on the hit energy
+        continue;
+
       //Just consider only the hits belonging to the specified time layer
       int depth2 = (((*it).depth() >> PCaloHit::kEcalDepthOffset) & PCaloHit::kEcalDepthMask);
 
-      if (depth2 != m_timeLayerId)
-        continue;
-
-      if ((*it).energy() < MIN_ENERGY_THRESHOLD)  //apply a minimal cut on the hit energy
-        continue;
 
       const DetId detId((*it).id());
 
@@ -99,17 +98,46 @@ void EcalTimeMapDigitizer::add(const std::vector<PCaloHit>& hits, int bunchCross
 
       TimeSamples& result(*findSignal(detId));
 
+      double binTime(timeOfFlight(detId, m_timeLayerId)); // m_timeLayerId is just 7 for some reason. TODO reconsider this?
+      
+      for(unsigned int bin(BUNCHSPACE*bunchCrossing); bin != result.waveform_capacity; ++bin) {
+        #ifdef ecal_time_debug
+        if (bin % 50 == 0 && iHit % 50 == 0) {
+          std::cout << "  hit = " << iHit << " bin = " << bin << std::endl;
+          std::cout << "  binTime = " << binTime << " depth = " << (*it).depth() << " energy  = " << (*it).energy() << std::endl;
+          std::cout << "  before addition, result.waveform[bin] = " << result.waveform[bin] << std::endl;
+        }
+        #endif
+        if (ComponentShapeCollection::toDepthBin((*it).depth()) <= ComponentShapeCollection::maxDepthBin()) {
+        result.waveform[bin] += (*(shapes()->at((*it).depth())))(binTime)* (*it).energy();
+        }
+        #ifdef ecal_time_debug
+        else { 
+          std::cout << "strange depth found: " << ComponentShapeCollection::toDepthBin((*it).depth()) << std::endl;
+        }
+        if (bin % 50 == 0 && iHit % 50 == 0) std::cout << "  after addition, result.waveform[bin] = " << result.waveform[bin] << std::endl;
+        #endif
+        binTime += result.waveform_granularity;
+      }
+
       //here fill the result for the given bunch crossing
+
+      // i think this is obsolete now that there is a real MTD
+      //if (depth2 != m_timeLayerId)
+      //  continue;
       result.average_time[bunchCrossing - m_minBunch] += jitter * (*it).energy();
       result.tot_energy[bunchCrossing - m_minBunch] += (*it).energy();
       result.nhits[bunchCrossing - m_minBunch]++;
+      
 
 #ifdef ecal_time_debug
       std::cout << (*it).id() << "\t" << (*it).depth() << "\t" << jitter << "\t" << (*it).energy() << "\t"
                 << result.average_time[bunchCrossing - m_minBunch] << "\t" << result.nhits[bunchCrossing - m_minBunch]
                 << "\t" << timeOfFlight(detId, m_timeLayerId) << std::endl;
 #endif
+      ++iHit;
     }
+    
   }
 }
 
@@ -165,6 +193,16 @@ void EcalTimeMapDigitizer::initializeMap() {
   blankOutUsedSamples();
 }
 
+void EcalTimeMapDigitizer::setEventSetup(edm::EventSetup const &eventSetup) const {
+  m_ComponentShapes->setEventSetup(eventSetup);
+}
+
+const ComponentShapeCollection* EcalTimeMapDigitizer::shapes() const {
+  //assert(nullptr != m_ComponentShapes);
+  return m_ComponentShapes;
+}
+
+
 void EcalTimeMapDigitizer::run(EcalTimeDigiCollection& output) {
 #ifdef ecal_time_debug
   std::cout << "[EcalTimeMapDigitizer]::Finalizing hits and fill output collection" << std::endl;
@@ -184,6 +222,7 @@ void EcalTimeMapDigitizer::run(EcalTimeDigiCollection& output) {
 #endif
 
     output.push_back(Digi(vSamAll(m_index[i])->id));
+    output.back().setWaveform(vSamAll(m_index[i])->waveform);
 
     unsigned int nTimeHits = 0;
     float timeHits[vSamAll(m_index[i])->time_average_capacity];

@@ -39,7 +39,7 @@ public:
 
   double derivative(double time) const;  // appears to not be used anywhere
 
-  void m_shape_print(const char* fileName);
+  void m_shape_print(const char* fileName) const;
   void setEventSetup(const edm::EventSetup& evtSetup);
 
 protected:
