@@ -7,9 +7,13 @@
 class ComponentShape : public EcalShapeBase {
 public:
   // useDB = false
-  ComponentShape(int shapeIndex) : EcalShapeBase(false), m_shapeIndex(shapeIndex) { buildMe(); }
+  ComponentShape(int shapeIndex) : EcalShapeBase(false), m_shapeIndex(shapeIndex) { buildMe(nullptr, false); }
   // useDB = true, buildMe is executed when setEventSetup and DB conditions are available
-  ComponentShape(int shapeIndex, edm::ConsumesCollector iC) : EcalShapeBase(false), espsToken_(iC.esConsumes()), m_shapeIndex(shapeIndex) {  buildMe(); } // TODO change this to actually use database
+  ComponentShape(int shapeIndex, edm::ConsumesCollector iC) : EcalShapeBase(false), espsToken_(iC.esConsumes()), m_shapeIndex(shapeIndex) {  buildMe(nullptr, false); } // TODO change this to actually use database
+
+  double timeToRise() const override; // need to stop default EcalShapeBase from aligning component shapes to same peaking time
+
+  void test() const;
 
 protected:
   void fillShape(float& time_interval,

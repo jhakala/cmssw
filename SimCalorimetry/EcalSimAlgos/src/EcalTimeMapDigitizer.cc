@@ -98,9 +98,11 @@ void EcalTimeMapDigitizer::add(const std::vector<PCaloHit>& hits, int bunchCross
 
       TimeSamples& result(*findSignal(detId));
 
-      double binTime(timeOfFlight(detId, m_timeLayerId)); // m_timeLayerId is just 7 for some reason. TODO reconsider this?
       
-      for(unsigned int bin(BUNCHSPACE*bunchCrossing); bin != result.waveform_capacity; ++bin) {
+      // for now we have waveform_granularity = 1., 10 BX, and waveform capacity 250 -- we want to start at 25*bunchCrossing and go to the end of waveform capacity
+      double binTime(0);
+      for(unsigned int bin(0); bin != result.waveform_capacity; ++bin) {
+        if (bin + (25*bunchCrossing-m_minBunch) - 1 > result.waveform_capacity) break;
         #ifdef ecal_time_debug
         if (bin % 50 == 0 && iHit % 50 == 0) {
           std::cout << "  hit = " << iHit << " bin = " << bin << std::endl;
@@ -109,7 +111,7 @@ void EcalTimeMapDigitizer::add(const std::vector<PCaloHit>& hits, int bunchCross
         }
         #endif
         if (ComponentShapeCollection::toDepthBin((*it).depth()) <= ComponentShapeCollection::maxDepthBin()) {
-        result.waveform[bin] += (*(shapes()->at((*it).depth())))(binTime)* (*it).energy();
+          result.waveform[bin+25*bunchCrossing-m_minBunch] += (*(shapes()->at((*it).depth())))(binTime-jitter)* (*it).energy();
         }
         #ifdef ecal_time_debug
         else { 
@@ -267,7 +269,8 @@ double EcalTimeMapDigitizer::timeOfFlight(const DetId& detId, int layer) const {
   auto cellGeometry(m_geometry->getGeometry(detId));
   assert(nullptr != cellGeometry);
   GlobalPoint layerPos =
-      (cellGeometry)->getPosition(double(layer) + 0.5);  //depth in mm in the middle of the layer position
+      (cellGeometry)->getPosition();
+      //(cellGeometry)->getPosition(double(layer) + 0.5);  //depth in mm in the middle of the layer position // JCH : I am not sure this is doing what it's supposed to, probably unimplemented since CaloCellGeometry returns the same value regardless of this double
   return layerPos.mag() * cm / c_light;
 }
 

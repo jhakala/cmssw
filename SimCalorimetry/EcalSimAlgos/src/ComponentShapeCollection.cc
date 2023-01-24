@@ -34,3 +34,9 @@ int ComponentShapeCollection::toDepthBin(int index) {
 int ComponentShapeCollection::maxDepthBin() {
   return m_nDepthBins-1;
 }
+
+void ComponentShapeCollection::test() const {
+  for (int i(0); i<m_nDepthBins; ++i) {
+    m_shapeArr[i]->test();
+  }
+}

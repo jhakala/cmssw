@@ -48,6 +48,9 @@ void EcalTimeDigiProducer::initializeEvent(edm::Event const &event, edm::EventSe
   m_BarrelDigitizer->initializeMap();
   m_ComponentShapes->setEventSetup(eventSetup);
   m_BarrelDigitizer->setEventSetup(eventSetup);
+#ifdef EDM_ML_DEBUG
+  m_ComponentShapes->test();
+#endif
 }
 
 void EcalTimeDigiProducer::accumulateCaloHits(HitsHandle const &ebHandle, int bunchCrossing) {

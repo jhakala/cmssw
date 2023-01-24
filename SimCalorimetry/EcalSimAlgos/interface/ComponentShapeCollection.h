@@ -22,6 +22,8 @@ public:
   static int toDepthBin(int index);
   static int maxDepthBin();
 
+  void test() const;
+
 protected:
   void buildMe(const edm::EventSetup* es = nullptr);
   void fillCollection();

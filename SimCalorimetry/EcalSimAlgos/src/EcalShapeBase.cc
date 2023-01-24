@@ -26,7 +26,7 @@ double EcalShapeBase::timeToRise() const { return timeOfMax() - timeOfThr(); }
 
 double EcalShapeBase::threshold() const { return m_thresh; }
 
-void EcalShapeBase::buildMe(const edm::EventSetup* evtSetup) {
+void EcalShapeBase::buildMe(const edm::EventSetup* evtSetup, bool normalize) {
   DVec shapeArray;
 
   float time_interval = 0;
@@ -49,8 +49,11 @@ void EcalShapeBase::buildMe(const edm::EventSetup* evtSetup) {
 
   const double maxelt(1.e-5 < maxel ? maxel : 1);
 
-  for (unsigned int i(0); i != shapeArray.size(); ++i) {
-    shapeArray[i] = shapeArray[i] / maxelt;
+  if (normalize) {
+
+    for (unsigned int i(0); i != shapeArray.size(); ++i) {
+      shapeArray[i] = shapeArray[i] / maxelt;
+    }
   }
 
   const double thresh(threshold() / maxelt);
@@ -122,7 +125,9 @@ double EcalShapeBase::derivative(double aTime) const {
 void EcalShapeBase::m_shape_print(const char* fileName) const {
   std::ofstream fs;
   fs.open(fileName);
+  fs << "{\n";
   for (auto i : m_shape)
     fs << "vec.push_back(" << i << ");\n";
+  fs << "}\n";
   fs.close();
 }

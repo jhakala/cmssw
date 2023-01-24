@@ -45,7 +45,7 @@ public:
 protected:
   unsigned int timeIndex(double aTime) const;
 
-  void buildMe(const edm::EventSetup* = nullptr);
+  void buildMe(const edm::EventSetup* = nullptr, bool normalize = true);
 
   virtual void fillShape(float& time_interval,
                          double& m_thresh,

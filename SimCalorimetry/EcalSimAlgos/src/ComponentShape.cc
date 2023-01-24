@@ -4755,3 +4755,11 @@ void ComponentShape::fillShape(float& time_interval,
       aVec.push_back(double(dispersion_[m_shapeIndex][i]));
   }
 }
+
+double ComponentShape::timeToRise() const { return 0.0; }
+
+void ComponentShape::test() const {
+  char filename [50];
+  sprintf(filename, "component_shape_%d.txt", m_shapeIndex);
+  m_shape_print(filename);
+}
