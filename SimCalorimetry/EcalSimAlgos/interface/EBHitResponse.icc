@@ -150,18 +150,19 @@ void EBHitResponseImpl<constset>::putAnalogSignal(const PCaloHit& hit, CLHEP::He
     }
   }
   else {
-    
-    const double tzero = (shapes()->at(ComponentShapeCollection::toDepthBin(hit.depth()))->timeToRise() + parameters.timePhase() - jitter -
-                          kSamplePeriod * (parameters.binOfMaximum() - phaseShift()));
-    double binTime(tzero);
+    if (ComponentShapeCollection::toDepthBin(hit.depth()) <= ComponentShapeCollection::maxDepthBin()) {
+      const double tzero = (shapes()->at(ComponentShapeCollection::toDepthBin(hit.depth()))->timeToRise() + parameters.timePhase() - jitter -
+                            kSamplePeriod * (parameters.binOfMaximum() - phaseShift()));
+      double binTime(tzero);
 
-    EcalSamples& result(*findSignal(detId));
+      EcalSamples& result(*findSignal(detId));
 
-    const unsigned int rsize(result.size());
+      const unsigned int rsize(result.size());
 
-    for (unsigned int bin(0); bin != rsize; ++bin) {
-      result[bin] += (*(shapes()->at(ComponentShapeCollection::toDepthBin(hit.depth()))))(binTime)*signal;
-      binTime += kSamplePeriod;
+      for (unsigned int bin(0); bin != rsize; ++bin) {
+          result[bin] += (*(shapes()->at(ComponentShapeCollection::toDepthBin(hit.depth()))))(binTime)*signal;
+        binTime += kSamplePeriod;
+      }
     }
   }
  

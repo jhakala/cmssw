@@ -22,12 +22,11 @@ EcalTimeDigiProducer::EcalTimeDigiProducer(const edm::ParameterSet &params,
       m_hitsProducerTokenEB(sumes.consumes<std::vector<PCaloHit>>(m_hitsProducerTagEB)),
       m_geometryToken(sumes.esConsumes()),
       m_timeLayerEB(params.getParameter<int>("timeLayerBarrel")),
-      m_Geometry(nullptr),
-      m_ComponentShapes() // TODO pass iC
+      m_Geometry(nullptr)
  {
   producesCollector.produces<EcalTimeDigiCollection>(m_EBdigiCollection);
 
-  m_ComponentShapes = new ComponentShapeCollection();
+  m_ComponentShapes = new ComponentShapeCollection(sumes);
   m_BarrelDigitizer = new EcalTimeMapDigitizer(EcalBarrel, m_ComponentShapes);
   
 

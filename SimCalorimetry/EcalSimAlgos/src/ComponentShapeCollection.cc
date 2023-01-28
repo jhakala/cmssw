@@ -1,24 +1,48 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/ComponentShapeCollection.h"
 
-ComponentShapeCollection::ComponentShapeCollection(bool useDBShape)
-     : m_useDBShape(useDBShape),
-       m_thresh(0.0) {
-     fillCollection();
-}
-
+// #define component_shape_debug 1
 void ComponentShapeCollection::setEventSetup(const edm::EventSetup& evtSetup) {
+#ifdef component_shape_debug
+  std::cout << "ComponentShapeCollection::setEventSetup called " << std::endl;
+#endif
   buildMe(&evtSetup);
+  for (int i=0; i<m_nDepthBins; ++i) {
+    m_shapeArr[i]->setEventSetup(evtSetup);
+  }
 }
 
 void ComponentShapeCollection::buildMe(const edm::EventSetup* evtSetup) {
-  fillCollection();
+#ifdef component_shape_debug
+  std::cout << "ComponentShapeCollection::buildMe called " << std::endl;
+#endif
+  fillCollection(m_useDBShape);
 };
 
-void ComponentShapeCollection::fillCollection() {
+void ComponentShapeCollection::fillCollection(edm::ConsumesCollector iC) {
+#ifdef component_shape_debug
+  std::cout << "ComponentShapeCollection::fillCollection(edm::ConsumesCollector iC) called " << std::endl;
+#endif
   //m_shapeArr->clear();
   for (int i=0; i<m_nDepthBins; ++i) {
-    m_shapeArr[i] = new ComponentShape(i);
+    m_shapeArr[i] = new ComponentShape(i, espsToken_);
+  }
+}
+
+void ComponentShapeCollection::fillCollection(bool useDBShape = false) {
+#ifdef component_shape_debug
+  std::cout << "ComponentShapeCollection::fillCollection(bool useDBShape) called " << std::endl;
+#endif
+  //m_shapeArr->clear();
+  if(useDBShape) {
+    for (int i=0; i<m_nDepthBins; ++i) {
+      m_shapeArr[i] = new ComponentShape(i, espsToken_);
+    }
+  }
+  else {
+    for (int i=0; i<m_nDepthBins; ++i) {
+      m_shapeArr[i] = new ComponentShape(i);
+    }
   }
 }
 
@@ -36,6 +60,9 @@ int ComponentShapeCollection::maxDepthBin() {
 }
 
 void ComponentShapeCollection::test() const {
+#ifdef component_shape_debug
+  std::cout << "ComponentShapeCollection::test called " << std::endl;
+#endif
   for (int i(0); i<m_nDepthBins; ++i) {
     m_shapeArr[i]->test();
   }

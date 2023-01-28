@@ -53,7 +53,7 @@ EcalDigiProducer::EcalDigiProducer(const edm::ParameterSet &params,
 EcalDigiProducer::EcalDigiProducer(const edm::ParameterSet &params, edm::ConsumesCollector &iC)
     : DigiAccumulatorMixMod(),
       m_APDShape(iC),
-      m_ComponentShapes(), // TODO pass iC
+      m_ComponentShapes(iC),
       m_EBShape(iC),
       m_EEShape(iC),
       m_ESShape(),

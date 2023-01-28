@@ -3,15 +3,18 @@
 
 #include "FWCore/Framework/interface/ConsumesCollector.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalShapeBase.h"
+#include "CondFormats/EcalObjects/interface/EcalSimComponentShape.h"
+#include "CondFormats/DataRecord/interface/EcalSimComponentShapeRcd.h"
 
 class ComponentShape : public EcalShapeBase {
 public:
   // useDB = false
   ComponentShape(int shapeIndex) : EcalShapeBase(false), m_shapeIndex(shapeIndex) { buildMe(nullptr, false); }
   // useDB = true, buildMe is executed when setEventSetup and DB conditions are available
-  ComponentShape(int shapeIndex, edm::ConsumesCollector iC) : EcalShapeBase(false), espsToken_(iC.esConsumes()), m_shapeIndex(shapeIndex) {  buildMe(nullptr, false); } // TODO change this to actually use database
+  ComponentShape(int shapeIndex, edm::ESGetToken<EcalSimComponentShape, EcalSimComponentShapeRcd> espsToken) : EcalShapeBase(true), espsToken_(espsToken), m_shapeIndex(shapeIndex) {} 
 
-  double timeToRise() const override; // need to stop default EcalShapeBase from aligning component shapes to same peaking time
+  // need to stop default EcalShapeBase from aligning component shapes to same peaking time
+  double timeToRise() const override; 
 
   void test() const;
 
@@ -22,7 +25,7 @@ protected:
                  const edm::EventSetup* es) const override;
 
 private:
-  edm::ESGetToken<EcalSimPulseShape, EcalSimPulseShapeRcd> espsToken_;
+  edm::ESGetToken<EcalSimComponentShape, EcalSimComponentShapeRcd> espsToken_;
   int m_shapeIndex;
 };
 

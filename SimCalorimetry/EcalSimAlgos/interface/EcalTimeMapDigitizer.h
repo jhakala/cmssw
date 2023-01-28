@@ -84,7 +84,7 @@ public:
 
   void setGeometry(const CaloSubdetectorGeometry* geometry);
 
-  void setEventSetup(edm::EventSetup const &eventSetup) const;
+  void setEventSetup(const edm::EventSetup &eventSetup);
 
   void initializeMap();
 

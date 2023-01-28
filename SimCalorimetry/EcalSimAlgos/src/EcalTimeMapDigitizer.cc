@@ -21,6 +21,7 @@
 #include <iostream>
 
 // #define ecal_time_debug 1
+// #define waveform_debug 1
 
 const float EcalTimeMapDigitizer::MIN_ENERGY_THRESHOLD =
     5e-5;  //50 KeV threshold to consider a valid hit in the timing detector
@@ -103,17 +104,18 @@ void EcalTimeMapDigitizer::add(const std::vector<PCaloHit>& hits, int bunchCross
       double binTime(0);
       for(unsigned int bin(0); bin != result.waveform_capacity; ++bin) {
         if (bin + (25*bunchCrossing-m_minBunch) - 1 > result.waveform_capacity) break;
-        #ifdef ecal_time_debug
+        #ifdef waveform_debug
         if (bin % 50 == 0 && iHit % 50 == 0) {
           std::cout << "  hit = " << iHit << " bin = " << bin << std::endl;
           std::cout << "  binTime = " << binTime << " depth = " << (*it).depth() << " energy  = " << (*it).energy() << std::endl;
+          std::cout << "waveform value: " << (*(shapes()->at((*it).depth())))(binTime-jitter) << std::endl;
           std::cout << "  before addition, result.waveform[bin] = " << result.waveform[bin] << std::endl;
         }
         #endif
         if (ComponentShapeCollection::toDepthBin((*it).depth()) <= ComponentShapeCollection::maxDepthBin()) {
           result.waveform[bin+25*bunchCrossing-m_minBunch] += (*(shapes()->at((*it).depth())))(binTime-jitter)* (*it).energy();
         }
-        #ifdef ecal_time_debug
+        #ifdef waveform_debug
         else { 
           std::cout << "strange depth found: " << ComponentShapeCollection::toDepthBin((*it).depth()) << std::endl;
         }
@@ -195,7 +197,8 @@ void EcalTimeMapDigitizer::initializeMap() {
   blankOutUsedSamples();
 }
 
-void EcalTimeMapDigitizer::setEventSetup(edm::EventSetup const &eventSetup) const {
+void EcalTimeMapDigitizer::setEventSetup(const edm::EventSetup &eventSetup) {
+  std::cout << "EcalTimeMapDigitizer::setEventSetup(...) called:" << std::endl;
   m_ComponentShapes->setEventSetup(eventSetup);
 }
 
