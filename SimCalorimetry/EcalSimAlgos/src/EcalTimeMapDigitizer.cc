@@ -102,7 +102,7 @@ void EcalTimeMapDigitizer::add(const std::vector<PCaloHit>& hits, int bunchCross
 
       TimeSamples& result(*findSignal(detId));
 
-      
+    if (nullptr != m_ComponentShapes) {
       // for now we have waveform_granularity = 1., 10 BX, and waveform capacity 250 -- we want to start at 25*bunchCrossing and go to the end of waveform capacity
       double binTime(0);
       for(unsigned int bin(0); bin != result.waveform_capacity; ++bin) {
@@ -116,6 +116,7 @@ void EcalTimeMapDigitizer::add(const std::vector<PCaloHit>& hits, int bunchCross
         #endif
         binTime += result.waveform_granularity;
       }
+    }
 
       //here fill the result for the given bunch crossing
 
@@ -189,8 +190,8 @@ void EcalTimeMapDigitizer::initializeMap() {
 }
 
 void EcalTimeMapDigitizer::setEventSetup(const edm::EventSetup &eventSetup) {
-  std::cout << "EcalTimeMapDigitizer::setEventSetup(...) called:" << std::endl;
-  m_ComponentShapes->setEventSetup(eventSetup);
+  if (nullptr != m_ComponentShapes) m_ComponentShapes->setEventSetup(eventSetup);
+  else throw cms::Exception("[EcalTimeMapDigitizer] setEventSetup was called, but this should only be called when componentWaveform is activated by cfg parameter");
 }
 
 const ComponentShapeCollection* EcalTimeMapDigitizer::shapes() const {
@@ -218,7 +219,7 @@ void EcalTimeMapDigitizer::run(EcalTimeDigiCollection& output) {
 #endif
 
     output.push_back(Digi(vSamAll(m_index[i])->id));
-    output.back().setWaveform(vSamAll(m_index[i])->waveform);
+    if(nullptr != m_ComponentShapes) output.back().setWaveform(vSamAll(m_index[i])->waveform);
 
     unsigned int nTimeHits = 0;
     float timeHits[vSamAll(m_index[i])->time_average_capacity];

@@ -37,6 +37,7 @@ public:
   void accumulate(edm::Event const &e, edm::EventSetup const &c) override;
   void accumulate(PileUpEventPrincipal const &e, edm::EventSetup const &c, edm::StreamID const &) override;
   void finalizeEvent(edm::Event &e, edm::EventSetup const &c) override;
+  
 
 private:
   typedef edm::Handle<std::vector<PCaloHit>> HitsHandle;
@@ -55,7 +56,8 @@ private:
 private:
   int m_timeLayerEB;
   const CaloGeometry *m_Geometry;
-  ComponentShapeCollection* m_ComponentShapes;
+  const bool m_componentWaveform;
+  ComponentShapeCollection* m_ComponentShapes = nullptr;
   EcalTimeMapDigitizer *m_BarrelDigitizer;
 };
 
