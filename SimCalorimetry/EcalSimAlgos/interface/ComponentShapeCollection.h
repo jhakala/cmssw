@@ -10,9 +10,9 @@ class ComponentShapeCollection {
 public:
 
 
-  ComponentShapeCollection(bool useDBShape, edm::ConsumesCollector iC) : m_useDBShape(useDBShape), m_thresh(0.0), espsToken_(iC.esConsumes()) {fillCollection(iC);} 
-  ComponentShapeCollection(edm::ConsumesCollector iC) : ComponentShapeCollection(true, iC) {std::cout << "ComponentShapeCollection(edm::ConsumesCollector iC) called" << std::endl;} 
-  ComponentShapeCollection(bool useDBShape) :  m_useDBShape(useDBShape), m_thresh(0.0) {std::cout << "ComponentShapeCollection(bool useDBShape) called with useDBShape " << useDBShape << std::endl; fillCollection(useDBShape);}
+  ComponentShapeCollection(bool useDBShape, edm::ConsumesCollector iC) : m_useDBShape(useDBShape), m_thresh(0.0), espsToken_(iC.esConsumes()) {fillCollection(iC);}
+  ComponentShapeCollection(edm::ConsumesCollector iC) : ComponentShapeCollection(true, iC) {}
+  ComponentShapeCollection(bool useDBShape) :  m_useDBShape(useDBShape), m_thresh(0.0) {fillCollection(useDBShape);}
 
   ~ComponentShapeCollection() {}
 

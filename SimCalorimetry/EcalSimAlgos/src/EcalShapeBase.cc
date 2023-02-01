@@ -16,7 +16,7 @@ EcalShapeBase::EcalShapeBase(bool useDBShape)
       m_timeOfMax(0.0),
       m_thresh(0.0) {}
 
-void EcalShapeBase::setEventSetup(const edm::EventSetup& evtSetup) { buildMe(&evtSetup); }
+void EcalShapeBase::setEventSetup(const edm::EventSetup& evtSetup, bool normalize) { buildMe(&evtSetup, normalize); }
 
 double EcalShapeBase::timeOfThr() const { return m_firstTimeOverThreshold; }
 

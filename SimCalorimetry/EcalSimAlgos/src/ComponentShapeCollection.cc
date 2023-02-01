@@ -8,7 +8,7 @@ void ComponentShapeCollection::setEventSetup(const edm::EventSetup& evtSetup) {
 #endif
   buildMe(&evtSetup);
   for (int i=0; i<m_nDepthBins; ++i) {
-    m_shapeArr[i]->setEventSetup(evtSetup);
+    m_shapeArr[i]->setEventSetup(evtSetup, false);
   }
 }
 

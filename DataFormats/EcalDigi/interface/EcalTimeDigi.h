@@ -15,6 +15,7 @@ public:
   void swap(EcalTimeDigi& rh) {
     std::swap(id_, rh.id_);
     std::swap(size_, rh.size_);
+    std::swap(waveform_, rh.waveform_);
     std::swap(data_, rh.data_);
   }
 

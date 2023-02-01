@@ -134,15 +134,13 @@ void EBHitResponseImpl<constset>::putAnalogSignal(const PCaloHit& hit, CLHEP::He
   }
 
   const double jitter(time - timeOfFlight(detId));
+  EcalSamples& result(*findSignal(detId));
+  const unsigned int rsize(result.size());
 
   if (!m_isComponentShapeBased) {
     const double tzero = (shape()->timeToRise() + parameters.timePhase() - jitter -
                           kSamplePeriod * (parameters.binOfMaximum() - phaseShift()));
     double binTime(tzero);
-
-    EcalSamples& result(*findSignal(detId));
-
-    const unsigned int rsize(result.size());
 
     for (unsigned int bin(0); bin != rsize; ++bin) {
       result[bin] += (*shape())(binTime)*signal;
@@ -151,16 +149,12 @@ void EBHitResponseImpl<constset>::putAnalogSignal(const PCaloHit& hit, CLHEP::He
   }
   else {
     if (ComponentShapeCollection::toDepthBin(hit.depth()) <= ComponentShapeCollection::maxDepthBin()) {
-      const double tzero = (shapes()->at(ComponentShapeCollection::toDepthBin(hit.depth()))->timeToRise() + parameters.timePhase() - jitter -
+      const double tzero = (shapes()->at(hit.depth())->timeToRise() + parameters.timePhase() - jitter -
                             kSamplePeriod * (parameters.binOfMaximum() - phaseShift()));
       double binTime(tzero);
 
-      EcalSamples& result(*findSignal(detId));
-
-      const unsigned int rsize(result.size());
-
       for (unsigned int bin(0); bin != rsize; ++bin) {
-          result[bin] += (*(shapes()->at(ComponentShapeCollection::toDepthBin(hit.depth()))))(binTime)*signal;
+          result[bin] += (*(shapes()->at(hit.depth())))(binTime)*signal;
         binTime += kSamplePeriod;
       }
     }

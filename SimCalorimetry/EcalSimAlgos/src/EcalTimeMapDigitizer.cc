@@ -39,15 +39,12 @@ EcalTimeMapDigitizer::EcalTimeMapDigitizer(EcalSubdetector myDet, ComponentShape
   //    m_RandGauss   = new CLHEP::RandGaussQ(   rng->getEngine() ) ;
 
   unsigned int size = 0;
-  DetId detId(0);
 
   //Initialize the map
   if (myDet == EcalBarrel) {
     size = EBDetId::kSizeForDenseIndexing;
-    detId = EBDetId::detIdFromDenseIndex(0);
   } else if (myDet == EcalEndcap) {
     size = EEDetId::kSizeForDenseIndexing;
-    detId = EEDetId::detIdFromDenseIndex(0);
   } else
     edm::LogError("TimeDigiError") << "[EcalTimeMapDigitizer]::ERROR::This subdetector " << myDet
                                    << " is not implemented";
@@ -56,11 +53,17 @@ EcalTimeMapDigitizer::EcalTimeMapDigitizer(EcalSubdetector myDet, ComponentShape
   assert(m_minBunch <= 0);
 
   m_vSam.reserve(size);
+  m_index.reserve(size);
 
   for (unsigned int i(0); i != size; ++i) {
     //       m_vSam.emplace_back(CaloGenericDetId( detId.det(), detId.subdetId(), i ) ,
     // 			  m_maxBunch-m_minBunch+1, abs(m_minBunch) );
-    m_vSam.emplace_back(TimeSamples(CaloGenericDetId(detId.det(), detId.subdetId(), i)));
+    if      (myDet == EcalBarrel) {
+      m_vSam.push_back(TimeSamples((DetId)(EBDetId::detIdFromDenseIndex(i))));
+    }
+    else if (myDet == EcalEndcap) {
+      m_vSam.push_back(TimeSamples((DetId)(EEDetId::detIdFromDenseIndex(i))));
+    }
   }
 
   edm::LogInfo("TimeDigiInfo") << "[EcalTimeDigitizer]::Subdetector " << m_subDet << "::Reserved size for time digis "
@@ -76,7 +79,6 @@ EcalTimeMapDigitizer::~EcalTimeMapDigitizer() {}
 
 void EcalTimeMapDigitizer::add(const std::vector<PCaloHit>& hits, int bunchCrossing) {
   if (bunchCrossing >= m_minBunch && bunchCrossing <= m_maxBunch) {
-    int iHit(0);
     for (std::vector<PCaloHit>::const_iterator it = hits.begin(), itEnd = hits.end(); it != itEnd; ++it) {
       //here goes the map logic
 
@@ -86,8 +88,9 @@ void EcalTimeMapDigitizer::add(const std::vector<PCaloHit>& hits, int bunchCross
       if ((*it).energy() < MIN_ENERGY_THRESHOLD)  //apply a minimal cut on the hit energy
         continue;
 
-      //Just consider only the hits belonging to the specified time layer
-      int depth2 = (((*it).depth() >> PCaloHit::kEcalDepthOffset) & PCaloHit::kEcalDepthMask);
+      //Old behavior: Just consider only the hits belonging to the specified time layer
+      //int depth2 = (((*it).depth() >> PCaloHit::kEcalDepthOffset) & PCaloHit::kEcalDepthMask);
+      //I think things make more sense if we allow all depths -- JCH
 
 
       const DetId detId((*it).id());
@@ -103,23 +106,13 @@ void EcalTimeMapDigitizer::add(const std::vector<PCaloHit>& hits, int bunchCross
       // for now we have waveform_granularity = 1., 10 BX, and waveform capacity 250 -- we want to start at 25*bunchCrossing and go to the end of waveform capacity
       double binTime(0);
       for(unsigned int bin(0); bin != result.waveform_capacity; ++bin) {
-        if (bin + (25*bunchCrossing-m_minBunch) - 1 > result.waveform_capacity) break;
-        #ifdef waveform_debug
-        if (bin % 50 == 0 && iHit % 50 == 0) {
-          std::cout << "  hit = " << iHit << " bin = " << bin << std::endl;
-          std::cout << "  binTime = " << binTime << " depth = " << (*it).depth() << " energy  = " << (*it).energy() << std::endl;
-          std::cout << "waveform value: " << (*(shapes()->at((*it).depth())))(binTime-jitter) << std::endl;
-          std::cout << "  before addition, result.waveform[bin] = " << result.waveform[bin] << std::endl;
-        }
-        #endif
         if (ComponentShapeCollection::toDepthBin((*it).depth()) <= ComponentShapeCollection::maxDepthBin()) {
-          result.waveform[bin+25*bunchCrossing-m_minBunch] += (*(shapes()->at((*it).depth())))(binTime-jitter)* (*it).energy();
+          result.waveform[bin] += (*(shapes()->at((*it).depth())))(binTime-jitter-25*(bunchCrossing-m_minBunch))* (*it).energy();
         }
         #ifdef waveform_debug
         else { 
           std::cout << "strange depth found: " << ComponentShapeCollection::toDepthBin((*it).depth()) << std::endl;
-        }
-        if (bin % 50 == 0 && iHit % 50 == 0) std::cout << "  after addition, result.waveform[bin] = " << result.waveform[bin] << std::endl;
+        } // note: understand what these depths mean
         #endif
         binTime += result.waveform_granularity;
       }
@@ -139,7 +132,6 @@ void EcalTimeMapDigitizer::add(const std::vector<PCaloHit>& hits, int bunchCross
                 << result.average_time[bunchCrossing - m_minBunch] << "\t" << result.nhits[bunchCrossing - m_minBunch]
                 << "\t" << timeOfFlight(detId, m_timeLayerId) << std::endl;
 #endif
-      ++iHit;
     }
     
   }
@@ -166,8 +158,7 @@ void EcalTimeMapDigitizer::blankOutUsedSamples()  // blank out previously used e
     vSamAll(m_index[i])->setZero();
   }
 
-  m_index.erase(m_index.begin(),  // done and make ready to start over
-                m_index.end());
+  m_index.clear();  // done and make ready to start over
 }
 
 void EcalTimeMapDigitizer::finalizeHits() {

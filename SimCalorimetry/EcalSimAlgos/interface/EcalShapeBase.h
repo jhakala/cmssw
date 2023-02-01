@@ -40,7 +40,7 @@ public:
   double derivative(double time) const;  // appears to not be used anywhere
 
   void m_shape_print(const char* fileName) const;
-  void setEventSetup(const edm::EventSetup& evtSetup);
+  void setEventSetup(const edm::EventSetup& evtSetup, bool normalize = true);
 
 protected:
   unsigned int timeIndex(double aTime) const;

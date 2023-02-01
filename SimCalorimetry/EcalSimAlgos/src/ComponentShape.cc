@@ -50,7 +50,8 @@ void ComponentShape::fillShape(float& time_interval,
   }
 }
 
-double ComponentShape::timeToRise() const { return 0.0; }
+double ComponentShape::timeToRise() const { return 16.0; } // hardcoded rather than computed because
+                                                           // components need relative time shifts
 
 void ComponentShape::test() const {
   char filename [50];

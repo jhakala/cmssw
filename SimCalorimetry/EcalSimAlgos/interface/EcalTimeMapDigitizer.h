@@ -24,7 +24,7 @@ public:
     static const unsigned short waveform_capacity = 10*25; // this will give a waveform with a granularity of 1ns
     static constexpr double waveform_granularity = 1. ; // this will give a waveform with a granularity of 1ns
 
-    DetId id;
+    const DetId id;
     float average_time[time_average_capacity];
     unsigned int nhits[time_average_capacity];
     float tot_energy[time_average_capacity];
