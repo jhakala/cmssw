@@ -149,7 +149,7 @@ void EBHitResponseImpl<constset>::putAnalogSignal(const PCaloHit& hit, CLHEP::He
   }
   else {
     if (ComponentShapeCollection::toDepthBin(hit.depth()) <= ComponentShapeCollection::maxDepthBin()) {
-      const double tzero = (shapes()->at(hit.depth())->timeToRise() + parameters.timePhase() - jitter -
+      const double tzero = (shapes()->at(hit.depth())->timeToRise() + m_componentPars->simParameters(detId).timePhase() - jitter -
                             kSamplePeriod * (parameters.binOfMaximum() - phaseShift()));
       double binTime(tzero);
 

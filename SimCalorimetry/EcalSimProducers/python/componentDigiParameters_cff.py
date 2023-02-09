@@ -5,6 +5,7 @@ component_digi_parameters = cms.PSet(
     componentTimeTag = cms.string("Component"),
     componentSeparateDigi = cms.bool(False),
     componentAddToBarrel  = cms.bool(False),
+    componentTimePhase  = cms.double(0.),
 
 )
 

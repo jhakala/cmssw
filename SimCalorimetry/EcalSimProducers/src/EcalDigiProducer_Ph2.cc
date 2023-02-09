@@ -109,7 +109,7 @@ EcalDigiProducer_Ph2::EcalDigiProducer_Ph2(const edm::ParameterSet& params, edm:
                                                                        params.getParameter<double>("photoelectronsToAnalogBarrel"),
                                                                        0,
                                                                        params.getParameter<double>("samplingFactor"),
-                                                                       params.getParameter<double>("timePhase"),
+                                                                       params.getParameter<double>("componentTimePhase"),
                                                                        m_readoutFrameSize,
                                                                        params.getParameter<int>("binOfMaximum"),
                                                                        params.getParameter<bool>("doPhotostatistics"),
