@@ -26,7 +26,7 @@ void ComponentShape::fillShape(float& time_interval,
 #endif
     auto const& esps = es->getData(espsToken_);
 
-    aVec = esps.barrel_shapes.at(m_shapeIndex);
+    aVec = esps.barrel_shapes.at(shapeIndex_);
     time_interval = esps.time_interval;
     m_thresh = esps.barrel_thresh;
 
@@ -52,9 +52,5 @@ void ComponentShape::fillShape(float& time_interval,
 
 double ComponentShape::timeToRise() const { return 16.0; } // hardcoded rather than computed because
                                                            // components need relative time shifts
-
-void ComponentShape::test() const {
-  char filename [50];
-  sprintf(filename, "component_shape_%d.txt", m_shapeIndex);
-  m_shape_print(filename);
-}
+                                                           // 16 nanoseconds ~aligns the phase II component
+                                                           // sim to the default with the current setup

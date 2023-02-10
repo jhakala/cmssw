@@ -10,8 +10,7 @@
 
 class ComponentSimParameterMap : public CaloVSimParameterMap {
 public:
-  //bool, bool, double, double, double, double, double, double, int, int, bool, bool
-  //ComponentSimParameterMap();
+  ComponentSimParameterMap();
   ComponentSimParameterMap(bool addToBarrel,
                            bool separateDigi,
                            double simHitToPhotoelectronsBarrel,

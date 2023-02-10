@@ -6,10 +6,7 @@
 
 class EcalSimComponentShape {
 public:
-  EcalSimComponentShape(){};
-  ~EcalSimComponentShape(){};
-  void setTimeInterval(float x) { time_interval = x; };
-  float getTimeInterval() { return time_interval; };
+  EcalSimComponentShape() = default;
 
   std::vector<std::vector<double> > barrel_shapes;  // there is no need to getters/setters, just access data directly
 

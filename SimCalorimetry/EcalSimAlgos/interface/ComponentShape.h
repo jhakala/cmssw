@@ -9,14 +9,12 @@
 class ComponentShape : public EcalShapeBase {
 public:
   // useDB = false
-  ComponentShape(int shapeIndex) : EcalShapeBase(false), m_shapeIndex(shapeIndex) { buildMe(nullptr, false); }
+  ComponentShape(int shapeIndex) : EcalShapeBase(false), shapeIndex_(shapeIndex) { buildMe(nullptr, false); }
   // useDB = true, buildMe is executed when setEventSetup and DB conditions are available
-  ComponentShape(int shapeIndex, edm::ESGetToken<EcalSimComponentShape, EcalSimComponentShapeRcd> espsToken) : EcalShapeBase(true), espsToken_(espsToken), m_shapeIndex(shapeIndex) {} 
+  ComponentShape(int shapeIndex, edm::ESGetToken<EcalSimComponentShape, EcalSimComponentShapeRcd> espsToken) : EcalShapeBase(true), espsToken_(espsToken), shapeIndex_(shapeIndex) {}
 
-  // need to stop default EcalShapeBase from aligning component shapes to same peaking time
+  // override EcalShapeBase timeToRise, so that it does not align component shapes to same peaking time
   double timeToRise() const override; 
-
-  void test() const;
 
 protected:
   void fillShape(float& time_interval,
@@ -26,7 +24,7 @@ protected:
 
 private:
   edm::ESGetToken<EcalSimComponentShape, EcalSimComponentShapeRcd> espsToken_;
-  int m_shapeIndex;
+  int shapeIndex_;
 };
 
 #endif

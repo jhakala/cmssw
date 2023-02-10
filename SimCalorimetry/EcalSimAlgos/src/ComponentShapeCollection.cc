@@ -58,12 +58,3 @@ int ComponentShapeCollection::toDepthBin(int index) {
 int ComponentShapeCollection::maxDepthBin() {
   return m_nDepthBins-1;
 }
-
-void ComponentShapeCollection::test() const {
-#ifdef component_shape_debug
-  std::cout << "ComponentShapeCollection::test called " << std::endl;
-#endif
-  for (int i(0); i<m_nDepthBins; ++i) {
-    m_shapeArr[i]->test();
-  }
-}

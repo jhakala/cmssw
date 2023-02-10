@@ -61,7 +61,7 @@ EcalTimeMapDigitizer::EcalTimeMapDigitizer(EcalSubdetector myDet, ComponentShape
     if      (myDet == EcalBarrel) {
       m_vSam.push_back(TimeSamples((DetId)(EBDetId::detIdFromDenseIndex(i))));
     }
-    else if (myDet == EcalEndcap) {
+    else {
       m_vSam.push_back(TimeSamples((DetId)(EEDetId::detIdFromDenseIndex(i))));
     }
   }
@@ -195,7 +195,6 @@ void EcalTimeMapDigitizer::setEventSetup(const edm::EventSetup &eventSetup) {
 }
 
 const ComponentShapeCollection* EcalTimeMapDigitizer::shapes() const {
-  //assert(nullptr != m_ComponentShapes);
   return m_ComponentShapes;
 }
 
