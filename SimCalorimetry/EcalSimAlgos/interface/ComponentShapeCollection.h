@@ -6,16 +6,15 @@
 #include "SimCalorimetry/EcalSimAlgos/interface/ComponentShape.h"
 
 class ComponentShapeCollection {
-
 public:
-
-
-  ComponentShapeCollection(bool useDBShape, edm::ConsumesCollector iC) : m_useDBShape(useDBShape), m_thresh(0.0), espsToken_(iC.esConsumes()) {fillCollection(iC);}
+  ComponentShapeCollection(bool useDBShape, edm::ConsumesCollector iC)
+      : m_useDBShape(useDBShape), m_thresh(0.0), espsToken_(iC.esConsumes()) {
+    fillCollection(iC);
+  }
   ComponentShapeCollection(edm::ConsumesCollector iC) : ComponentShapeCollection(true, iC) {}
-  ComponentShapeCollection(bool useDBShape) :  m_useDBShape(useDBShape), m_thresh(0.0) {fillCollection(useDBShape);}
+  ComponentShapeCollection(bool useDBShape) : m_useDBShape(useDBShape), m_thresh(0.0) { fillCollection(useDBShape); }
 
   ~ComponentShapeCollection() {}
-
 
   void setEventSetup(const edm::EventSetup& evtSetup);
 
@@ -32,7 +31,7 @@ protected:
   double m_thresh;
 
 private:
-  const static int m_nDepthBins = 23; // dictated by SimG4CMS/Calo/src/ECalSD.cc, 230 mm / 10 mm
+  const static int m_nDepthBins = 23;  // dictated by SimG4CMS/Calo/src/ECalSD.cc, 230 mm / 10 mm
   edm::ESGetToken<EcalSimComponentShape, EcalSimComponentShapeRcd> espsToken_;
   ComponentShape* m_shapeArr[m_nDepthBins];
 };

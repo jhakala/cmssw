@@ -23,13 +23,12 @@ EcalTimeDigiProducer::EcalTimeDigiProducer(const edm::ParameterSet &params,
       m_geometryToken(sumes.esConsumes()),
       m_timeLayerEB(params.getParameter<int>("timeLayerBarrel")),
       m_Geometry(nullptr),
-      m_componentWaveform(params.getParameter<bool>("componentWaveform"))
- {
+      m_componentWaveform(params.getParameter<bool>("componentWaveform")) {
   producesCollector.produces<EcalTimeDigiCollection>(m_EBdigiCollection);
 
-  if (m_componentWaveform) m_ComponentShapes = new ComponentShapeCollection(sumes);
+  if (m_componentWaveform)
+    m_ComponentShapes = new ComponentShapeCollection(sumes);
   m_BarrelDigitizer = new EcalTimeMapDigitizer(EcalBarrel, m_ComponentShapes);
-  
 
 #ifdef EDM_ML_DEBUG
   edm::LogVerbatim("TimeDigiInfo") << "[EcalTimeDigiProducer]::Create EB " << m_EBdigiCollection
@@ -51,7 +50,8 @@ void EcalTimeDigiProducer::initializeEvent(edm::Event const &event, edm::EventSe
     m_BarrelDigitizer->setEventSetup(eventSetup);
   }
 #ifdef EDM_ML_DEBUG
-  if (m_componentWaveform) m_ComponentShapes->test();
+  if (m_componentWaveform)
+    m_ComponentShapes->test();
 #endif
 }
 

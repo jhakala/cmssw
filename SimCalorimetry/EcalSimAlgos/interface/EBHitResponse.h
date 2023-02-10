@@ -32,8 +32,7 @@ public:
                     const APDSimParameters* apdPars = nullptr,
                     const CaloVShape* apdShape = nullptr,
                     const ComponentSimParameterMap* componentPars = nullptr,
-                    const ComponentShapeCollection* componentShapes = nullptr
-                   );
+                    const ComponentShapeCollection* componentShapes = nullptr);
 
   ~EBHitResponseImpl() override;
 

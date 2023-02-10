@@ -7,7 +7,7 @@ void ComponentShapeCollection::setEventSetup(const edm::EventSetup& evtSetup) {
   std::cout << "ComponentShapeCollection::setEventSetup called " << std::endl;
 #endif
   buildMe(&evtSetup);
-  for (int i=0; i<m_nDepthBins; ++i) {
+  for (int i = 0; i < m_nDepthBins; ++i) {
     m_shapeArr[i]->setEventSetup(evtSetup, false);
   }
 }
@@ -24,7 +24,7 @@ void ComponentShapeCollection::fillCollection(edm::ConsumesCollector iC) {
   std::cout << "ComponentShapeCollection::fillCollection(edm::ConsumesCollector iC) called " << std::endl;
 #endif
   //m_shapeArr->clear();
-  for (int i=0; i<m_nDepthBins; ++i) {
+  for (int i = 0; i < m_nDepthBins; ++i) {
     m_shapeArr[i] = new ComponentShape(i, espsToken_);
   }
 }
@@ -34,27 +34,23 @@ void ComponentShapeCollection::fillCollection(bool useDBShape = false) {
   std::cout << "ComponentShapeCollection::fillCollection(bool useDBShape) called " << std::endl;
 #endif
   //m_shapeArr->clear();
-  if(useDBShape) {
-    for (int i=0; i<m_nDepthBins; ++i) {
+  if (useDBShape) {
+    for (int i = 0; i < m_nDepthBins; ++i) {
       m_shapeArr[i] = new ComponentShape(i, espsToken_);
     }
-  }
-  else {
-    for (int i=0; i<m_nDepthBins; ++i) {
+  } else {
+    for (int i = 0; i < m_nDepthBins; ++i) {
       m_shapeArr[i] = new ComponentShape(i);
     }
   }
 }
 
 const ComponentShape* ComponentShapeCollection::at(int depthIndex) const {
-  if (0 > toDepthBin(depthIndex) || toDepthBin(depthIndex) > m_nDepthBins-1) throw cms::Exception("ComponentShape:: invalid depth requested");
+  if (0 > toDepthBin(depthIndex) || toDepthBin(depthIndex) > m_nDepthBins - 1)
+    throw cms::Exception("ComponentShape:: invalid depth requested");
   return m_shapeArr[toDepthBin(depthIndex)];
 }
 
-int ComponentShapeCollection::toDepthBin(int index) {
-  return index>>3;
-}
+int ComponentShapeCollection::toDepthBin(int index) { return index >> 3; }
 
-int ComponentShapeCollection::maxDepthBin() {
-  return m_nDepthBins-1;
-}
+int ComponentShapeCollection::maxDepthBin() { return m_nDepthBins - 1; }

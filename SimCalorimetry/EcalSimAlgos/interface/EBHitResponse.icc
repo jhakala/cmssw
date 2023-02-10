@@ -20,7 +20,7 @@ template <class constset>
 EBHitResponseImpl<constset>::EBHitResponseImpl(const CaloVSimParameterMap* parameterMap,
                                                const CaloVShape* shape,
                                                bool apdOnly,
-                                               bool  doComponent,
+                                               bool doComponent,
                                                const APDSimParameters* apdPars,
                                                const CaloVShape* apdShape,
                                                const ComponentSimParameterMap* componentPars,
@@ -91,7 +91,6 @@ const ComponentShapeCollection* EBHitResponseImpl<constset>::shapes() const {
   return m_componentShapes;
 }
 
-
 template <class constset>
 void EBHitResponseImpl<constset>::putAPDSignal(const DetId& detId, double npe, double time) {
   const CaloSimParameters& parameters(*params(detId));
@@ -146,20 +145,19 @@ void EBHitResponseImpl<constset>::putAnalogSignal(const PCaloHit& hit, CLHEP::He
       result[bin] += (*shape())(binTime)*signal;
       binTime += kSamplePeriod;
     }
-  }
-  else {
+  } else {
     if (ComponentShapeCollection::toDepthBin(hit.depth()) <= ComponentShapeCollection::maxDepthBin()) {
-      const double tzero = (shapes()->at(hit.depth())->timeToRise() + m_componentPars->simParameters(detId).timePhase() - jitter -
-                            kSamplePeriod * (parameters.binOfMaximum() - phaseShift()));
+      const double tzero =
+          (shapes()->at(hit.depth())->timeToRise() + m_componentPars->simParameters(detId).timePhase() - jitter -
+           kSamplePeriod * (parameters.binOfMaximum() - phaseShift()));
       double binTime(tzero);
 
       for (unsigned int bin(0); bin != rsize; ++bin) {
-          result[bin] += (*(shapes()->at(hit.depth())))(binTime)*signal;
+        result[bin] += (*(shapes()->at(hit.depth())))(binTime)*signal;
         binTime += kSamplePeriod;
       }
     }
   }
- 
 }
 
 template <class constset>

@@ -4,10 +4,6 @@
 #include "SimCalorimetry/CaloSimAlgos/interface/CaloVSimParameterMap.h"
 #include "SimCalorimetry/CaloSimAlgos/interface/CaloSimParameters.h"
 
-
-
-
-
 class ComponentSimParameterMap : public CaloVSimParameterMap {
 public:
   ComponentSimParameterMap();
@@ -37,10 +33,6 @@ private:
 
   /// EB
   CaloSimParameters theComponentParameters;
-
-
-
-
 };
 
 #endif

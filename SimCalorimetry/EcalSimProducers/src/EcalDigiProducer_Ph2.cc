@@ -94,39 +94,51 @@ EcalDigiProducer_Ph2::EcalDigiProducer_Ph2(const edm::ParameterSet& params, edm:
                                                          m_apdDigiTag,
                                                          params.getParameter<std::vector<double>>("apdNonlParms"))),
 
-      m_APDResponse(
-      !m_apdSeparateDigi
-                        ? nullptr
-                        : std::make_unique<EBHitResponse_Ph2>(
-                              m_ParameterMap.get(), &m_EBShape, true, false, m_apdParameters.get(), &m_APDShape, m_componentParameters.get(), &m_ComponentShapes)),
-
+      m_APDResponse(!m_apdSeparateDigi ? nullptr
+                                       : std::make_unique<EBHitResponse_Ph2>(m_ParameterMap.get(),
+                                                                             &m_EBShape,
+                                                                             true,
+                                                                             false,
+                                                                             m_apdParameters.get(),
+                                                                             &m_APDShape,
+                                                                             m_componentParameters.get(),
+                                                                             &m_ComponentShapes)),
 
       m_componentDigiTag(params.getParameter<std::string>("componentDigiTag")),
-      m_componentParameters(std::make_unique<ComponentSimParameterMap>(params.getParameter<bool>("componentAddToBarrel"),
-                                                                       m_componentSeparateDigi,
-                                                                       params.getParameter<double>("simHitToPhotoelectronsBarrel"),
-                                                                       0,  // endcap parameters not needed
-                                                                       params.getParameter<double>("photoelectronsToAnalogBarrel"),
-                                                                       0,
-                                                                       params.getParameter<double>("samplingFactor"),
-                                                                       params.getParameter<double>("componentTimePhase"),
-                                                                       m_readoutFrameSize,
-                                                                       params.getParameter<int>("binOfMaximum"),
-                                                                       params.getParameter<bool>("doPhotostatistics"),
-                                                                       params.getParameter<bool>("syncPhase"))),
+      m_componentParameters(
+          std::make_unique<ComponentSimParameterMap>(params.getParameter<bool>("componentAddToBarrel"),
+                                                     m_componentSeparateDigi,
+                                                     params.getParameter<double>("simHitToPhotoelectronsBarrel"),
+                                                     0,  // endcap parameters not needed
+                                                     params.getParameter<double>("photoelectronsToAnalogBarrel"),
+                                                     0,
+                                                     params.getParameter<double>("samplingFactor"),
+                                                     params.getParameter<double>("componentTimePhase"),
+                                                     m_readoutFrameSize,
+                                                     params.getParameter<int>("binOfMaximum"),
+                                                     params.getParameter<bool>("doPhotostatistics"),
+                                                     params.getParameter<bool>("syncPhase"))),
 
       m_ComponentResponse(!m_componentSeparateDigi
-                        ? nullptr
-                        : std::make_unique<EBHitResponse_Ph2>(
-                              m_ParameterMap.get(), &m_EBShape, false, true, m_apdParameters.get(), &m_APDShape, m_componentParameters.get(), &m_ComponentShapes)), // check if that false is correct // TODO HERE JCH
-
+                              ? nullptr
+                              : std::make_unique<EBHitResponse_Ph2>(
+                                    m_ParameterMap.get(),
+                                    &m_EBShape,
+                                    false,
+                                    true,
+                                    m_apdParameters.get(),
+                                    &m_APDShape,
+                                    m_componentParameters.get(),
+                                    &m_ComponentShapes)),  // check if that false is correct // TODO HERE JCH
 
       m_EBResponse(std::make_unique<EBHitResponse_Ph2>(m_ParameterMap.get(),
                                                        &m_EBShape,
                                                        false,  // barrel
                                                        false,  // not component-based
                                                        m_apdParameters.get(),
-                                                       &m_APDShape, m_componentParameters.get(), &m_ComponentShapes)),
+                                                       &m_APDShape,
+                                                       m_componentParameters.get(),
+                                                       &m_ComponentShapes)),
 
       m_PreMix1(params.getParameter<bool>("EcalPreMixStage1")),
       m_PreMix2(params.getParameter<bool>("EcalPreMixStage2")),
@@ -198,10 +210,12 @@ EcalDigiProducer_Ph2::EcalDigiProducer_Ph2(const edm::ParameterSet& params, edm:
     m_APDDigitizer = std::make_unique<EBDigitizer_Ph2>(m_APDResponse.get(), m_APDElectronicsSim.get(), false);
   }
   if (m_componentSeparateDigi) {
-    m_ComponentCoder = std::make_unique<EcalLiteDTUCoder>(addNoise, m_PreMix1, m_EBCorrNoise[0].get(), m_EBCorrNoise[1].get());
-    m_ComponentElectronicsSim =
-      std::make_unique<EcalElectronicsSim_Ph2>(m_ParameterMap.get(), m_ComponentCoder.get(), applyConstantTerm, rmsConstantTerm);
-    m_ComponentDigitizer = std::make_unique<EBDigitizer_Ph2>(m_ComponentResponse.get(), m_ComponentElectronicsSim.get(), addNoise);
+    m_ComponentCoder =
+        std::make_unique<EcalLiteDTUCoder>(addNoise, m_PreMix1, m_EBCorrNoise[0].get(), m_EBCorrNoise[1].get());
+    m_ComponentElectronicsSim = std::make_unique<EcalElectronicsSim_Ph2>(
+        m_ParameterMap.get(), m_ComponentCoder.get(), applyConstantTerm, rmsConstantTerm);
+    m_ComponentDigitizer =
+        std::make_unique<EBDigitizer_Ph2>(m_ComponentResponse.get(), m_ComponentElectronicsSim.get(), addNoise);
   }
 
   m_BarrelDigitizer = std::make_unique<EBDigitizer_Ph2>(m_EBResponse.get(), m_ElectronicsSim.get(), addNoise);
@@ -292,7 +306,7 @@ void EcalDigiProducer_Ph2::finalizeEvent(edm::Event& event, edm::EventSetup cons
 
   event.put(std::move(barrelResult), m_EBdigiCollection);
   if (m_componentSeparateDigi) {
-    event.put(std::move(componentResult),    m_componentDigiTag         ) ;
+    event.put(std::move(componentResult), m_componentDigiTag);
   }
 
   randomEngine_ = nullptr;  // to prevent access outside event

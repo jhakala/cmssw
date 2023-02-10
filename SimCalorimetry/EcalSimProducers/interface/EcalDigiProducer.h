@@ -157,11 +157,11 @@ private:
 
   std::unique_ptr<EBHitResponse> m_APDResponse;
 
-
   const std::string m_componentDigiTag;
   std::unique_ptr<const ComponentSimParameterMap> m_componentParameters;
 
   std::unique_ptr<EBHitResponse> m_ComponentResponse;
+
 protected:
   std::unique_ptr<EBHitResponse> m_EBResponse;
   std::unique_ptr<EEHitResponse> m_EEResponse;

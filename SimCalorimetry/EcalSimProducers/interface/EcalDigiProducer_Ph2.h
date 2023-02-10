@@ -114,7 +114,6 @@ private:
 
   std::unique_ptr<EBHitResponse_Ph2> m_APDResponse;
 
-
   const std::string m_componentDigiTag;
   std::unique_ptr<const ComponentSimParameterMap> m_componentParameters;
 
