@@ -50,8 +50,8 @@ void EcalShapeBase::buildMe(const edm::EventSetup* evtSetup, bool normalize) {
   const double maxelt(1.e-5 < maxel ? maxel : 1);
 
   if (normalize) {
-    for (double y : shapeArray) {
-      y = y / maxelt;
+    for (unsigned int i(0); i != shapeArray.size(); ++i) {
+      shapeArray[i] = shapeArray[i] / maxelt;
     }
   }
 
