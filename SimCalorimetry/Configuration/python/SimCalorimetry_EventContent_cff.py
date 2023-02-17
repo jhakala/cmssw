@@ -8,6 +8,7 @@ SimCalorimetryFEVTDEBUG = cms.PSet(
         'keep *_simEcalTriggerPrimitiveDigis_*_*', 
         'keep *_simEcalEBTriggerPrimitiveDigis_*_*',
         'keep *_simHcalDigis_*_*', 
+        'keep EBDigiCollection_simEcalUnsuppressedDigis_*_*',
         'keep ZDCDataFramesSorted_simHcalUnsuppressedDigis_*_*',
         'drop ZDCDataFramesSorted_mix_simHcalUnsuppressedDigis*_*',
         'keep *_simHcalTriggerPrimitiveDigis_*_*',
@@ -43,6 +44,10 @@ SimCalorimetryPREMIX = cms.PSet(
 from Configuration.Eras.Modifier_run2_common_cff import run2_common
 run2_common.toModify( SimCalorimetryFEVTDEBUG.outputCommands, func=lambda outputCommands: outputCommands.append('keep *_simHcalUnsuppressedDigis_*_*') )
 run2_common.toModify( SimCalorimetryRAW.outputCommands, func=lambda outputCommands: outputCommands.append('keep *_simHcalUnsuppressedDigis_*_*') )
+
+from Configuration.Eras.Modifier_run3_ecal_devel_cff import run3_ecal_devel
+run3_ecal_devel.toModify(SimCalorimetryFEVTDEBUG.outputCommands, func=lambda outputCommands: outputCommands.append('keep *_mix_EBTimeDigi_*') )
+run3_ecal_devel.toModify(SimCalorimetryRAW.outputCommands, func=lambda outputCommands: outputCommands.append('keep *_mix_EBTimeDigi_*') )
 
 from Configuration.Eras.Modifier_phase2_ecal_devel_cff import phase2_ecal_devel
 phase2_ecal_devel.toModify(SimCalorimetryFEVTDEBUG.outputCommands, func=lambda outputCommands: outputCommands.append('keep *_ecal*_*_*') )
