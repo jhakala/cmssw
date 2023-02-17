@@ -2,7 +2,6 @@
 
 namespace {
   constexpr unsigned int MAXSAMPLES = 10;
-  constexpr unsigned int WAVEFORMSAMPLES = 250;
 }  // namespace
 
 EcalTimeDigi::EcalTimeDigi() : id_(0), size_(0), sampleOfInterest_(-1), waveform_(WAVEFORMSAMPLES), data_(MAXSAMPLES) {}

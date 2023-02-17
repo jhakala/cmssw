@@ -21,7 +21,7 @@ class EcalTimeMapDigitizer {
 public:
   struct time_average {
     static const unsigned short time_average_capacity = 10;   // this corresponds to the number of BX
-    static const unsigned short waveform_capacity = 10 * 25;  // this will give a waveform with
+    static const unsigned short waveform_capacity = EcalTimeDigi::WAVEFORMSAMPLES;  // this will give a waveform with
     static constexpr double waveform_granularity = 1.;        // a granularity of 1ns
 
     const DetId id;
