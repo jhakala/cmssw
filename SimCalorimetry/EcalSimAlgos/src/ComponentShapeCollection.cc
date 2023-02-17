@@ -25,7 +25,7 @@ void ComponentShapeCollection::fillCollection(edm::ConsumesCollector iC) {
 #endif
   //m_shapeArr->clear();
   for (int i = 0; i < m_nDepthBins; ++i) {
-    m_shapeArr[i] = new ComponentShape(i, espsToken_);
+    m_shapeArr[i] = std::make_shared<ComponentShape>(i, espsToken_);
   }
 }
 
@@ -36,16 +36,16 @@ void ComponentShapeCollection::fillCollection(bool useDBShape = false) {
   //m_shapeArr->clear();
   if (useDBShape) {
     for (int i = 0; i < m_nDepthBins; ++i) {
-      m_shapeArr[i] = new ComponentShape(i, espsToken_);
+      m_shapeArr[i] = std::make_shared<ComponentShape>(i, espsToken_);
     }
   } else {
     for (int i = 0; i < m_nDepthBins; ++i) {
-      m_shapeArr[i] = new ComponentShape(i);
+      m_shapeArr[i] = std::make_shared<ComponentShape>(i);
     }
   }
 }
 
-const ComponentShape* ComponentShapeCollection::at(int depthIndex) const {
+const std::shared_ptr<ComponentShape> ComponentShapeCollection::at(int depthIndex) const {
   if (0 > toDepthBin(depthIndex) || toDepthBin(depthIndex) > m_nDepthBins - 1)
     throw cms::Exception("ComponentShape:: invalid depth requested");
   return m_shapeArr[toDepthBin(depthIndex)];

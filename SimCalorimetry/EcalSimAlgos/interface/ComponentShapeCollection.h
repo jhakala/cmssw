@@ -18,7 +18,7 @@ public:
 
   void setEventSetup(const edm::EventSetup& evtSetup);
 
-  const ComponentShape* at(int depthIndex) const;
+  const std::shared_ptr<ComponentShape> at(int depthIndex) const;
   static int toDepthBin(int index);
   static int maxDepthBin();
 
@@ -33,7 +33,7 @@ protected:
 private:
   const static int m_nDepthBins = 23;  // dictated by SimG4CMS/Calo/src/ECalSD.cc, 230 mm / 10 mm
   edm::ESGetToken<EcalSimComponentShape, EcalSimComponentShapeRcd> espsToken_;
-  ComponentShape* m_shapeArr[m_nDepthBins];
+  std::shared_ptr<ComponentShape> m_shapeArr[m_nDepthBins];
 };
 
 #endif
