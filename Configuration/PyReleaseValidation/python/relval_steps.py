@@ -3884,6 +3884,16 @@ steps['NanoFullHEfail']={'-s':'NANO',
                          '--datatier':'NANOAODSIM',
                          '--eventcontent':'NANOEDMAODSIM',
                          '--filein':'file:step3_inMINIAODSIM.root'}
+
+steps['HCALNano']={'-s':'RAW2DIGI,RECO,USER:DPGAnalysis/HcalNanoAOD/hcalNano_cff.hcalNanoTask',
+                         '--conditions':'auto:run3_data_prompt',
+                         '-n':'10',
+                         '--era' : 'Run3',
+                         '--geometry' : 'DB:Extended',
+                         '--datatier':'NANOAOD',
+                         '--eventcontent':'NANOAOD'}
+
+steps['HCALNanoCalibGap']=merge([steps['HCALNano'], {'--customise':'DPGAnalysis/HcalNanoAOD/hcalNano_cff.customiseHcalCalib'}])
                          
 #################################################################################
 ####From this line till the end of the file :
