@@ -50,13 +50,9 @@ void HcalUMNioTableProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   edm::Handle<HcalUMNioDigi> uMNioDigi;
   iEvent.getByToken(tokenUMNio_, uMNioDigi);
   uint8_t eventType = uMNioDigi->eventType();
-  uint32_t laserType = uMNioDigi->valueUserWord(0);
 
   auto uMNioNanoTable = std::make_unique<nanoaod::FlatTable>(1, "uMNio", true);
-
   uMNioNanoTable->addColumnValue<uint8_t>("EventType", eventType, "EventType");
-  uMNioNanoTable->addColumnValue<uint32_t>("LaserType", laserType, "LaserType");
-
   for (int iWord = 0; iWord < uMNioDigi->numberUserWords(); ++iWord) {
     uint32_t thisWord = uMNioDigi->valueUserWord(iWord);
     uMNioNanoTable->addColumnValue<uint32_t>("UserWord" + std::to_string(iWord), thisWord, "UserWord" + std::to_string(iWord));
