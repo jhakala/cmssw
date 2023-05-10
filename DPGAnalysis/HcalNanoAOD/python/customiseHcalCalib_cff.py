@@ -8,9 +8,14 @@ def customiseHcalCalib(process):
     process.hcalNanoTask.add(process.uMNioTable)
     process.hcalNanoDigiTask.add(process.uMNioTable)
 
+    process.load("DPGAnalysis.HcalNanoAOD.hcalUHTRTable_cff")
+    process.hcalNanoTask.add(process.uHTRTable)
+    process.hcalNanoDigiTask.add(process.uHTRTable)
+
     # Raw data has a different name, hltHcalCalibrationRaw instead of rawDataCollector
     process.hcalDigis.InputLabel = cms.InputTag('hltHcalCalibrationRaw')
-
+    process.uHTRTable.InputLabel = process.hcalDigis.InputLabel
+    
     # Create EDFilter for HLT_HcalCalibration
     # (HCAL raw data is not present in ECAL-triggered events, annoyingly. The filter stops downstream modules from throwing ProductNotFound.)
     process.hcalCalibHLTFilter = cms.EDFilter("TriggerResultsFilter",
