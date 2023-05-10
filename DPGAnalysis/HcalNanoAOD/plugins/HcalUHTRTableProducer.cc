@@ -28,10 +28,9 @@ private:
   std::vector<int> fedUnpackList_;
 
 public:
-  explicit HcalUHTRTableProducer(const edm::ParameterSet& iConfig) : 
-      tagRaw_(iConfig.getParameter<edm::InputTag>("InputLabel")),
-      fedUnpackList_(iConfig.getUntrackedParameter<std::vector<int>>("FEDs", std::vector<int>()))
-      {
+  explicit HcalUHTRTableProducer(const edm::ParameterSet& iConfig)
+      : tagRaw_(iConfig.getParameter<edm::InputTag>("InputLabel")),
+        fedUnpackList_(iConfig.getUntrackedParameter<std::vector<int>>("FEDs", std::vector<int>())) {
     tokenRaw_ = consumes<FEDRawDataCollection>(tagRaw_);
     produces<nanoaod::FlatTable>("uHTRTable");
 
@@ -44,7 +43,6 @@ public:
       for (int i = FEDNumbering::MINHCALuTCAFEDID; i <= FEDNumbering::MAXHCALuTCAFEDID; i++)
         fedUnpackList_.push_back(i);
     }
-
   }
 
   ~HcalUHTRTableProducer() override{};
@@ -66,7 +64,7 @@ void HcalUHTRTableProducer::beginRun(edm::Run const& iRun, edm::EventSetup const
 
 void HcalUHTRTableProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   std::vector<int> crate;
-  std::vector<int> slot; 
+  std::vector<int> slot;
   std::vector<uint32_t> evn;
   std::vector<uint32_t> bcn;
   std::vector<uint32_t> orn;

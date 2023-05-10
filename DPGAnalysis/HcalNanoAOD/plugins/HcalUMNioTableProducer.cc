@@ -55,7 +55,8 @@ void HcalUMNioTableProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   uMNioNanoTable->addColumnValue<uint8_t>("EventType", eventType, "EventType");
   for (int iWord = 0; iWord < uMNioDigi->numberUserWords(); ++iWord) {
     uint32_t thisWord = uMNioDigi->valueUserWord(iWord);
-    uMNioNanoTable->addColumnValue<uint32_t>("UserWord" + std::to_string(iWord), thisWord, "UserWord" + std::to_string(iWord));
+    uMNioNanoTable->addColumnValue<uint32_t>(
+        "UserWord" + std::to_string(iWord), thisWord, "UserWord" + std::to_string(iWord));
   }
   iEvent.put(std::move(uMNioNanoTable), "uMNioTable");
 }
