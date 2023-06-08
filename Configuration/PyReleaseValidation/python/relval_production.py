@@ -39,7 +39,7 @@ workflows[1052] = ['',['RunCosmics2022F','TIER0EXPCOSMICSRUN3','ALCAEXPCOSMICSRU
 workflows[1052.1] = ['',['RunSiPixelCalCosmics2022F','ALCASPLITSIPIXELLAMCS','ALCAHARVDSIPIXELLAMCS']]
 
 workflows[1060.1] = ['',['RunZeroBias2022D', 'HCALNano']]
-workflows[1060.2] = ['',['RunHcalNZS2022D', 'HCALNanoCalibGap']]
+workflows[1060.2] = ['',['TestEnableEcalHCAL2023C', 'HCALNanoCalibGap']]
 
 ## MC production test
 #workflows[1100] = [ '',[]]
