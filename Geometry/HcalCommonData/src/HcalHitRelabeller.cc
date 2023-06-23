@@ -86,13 +86,13 @@ DetId HcalHitRelabeller::relabel(const uint32_t testId, const HcalDDDRecConstant
 }
 
 double HcalHitRelabeller::energyWt(const uint32_t testId) const {
-  int det, z, depth, eta, phi, layer;
-  HcalTestNumbering::unpackHcalIndex(testId, det, z, depth, eta, phi, layer);
-  int zside = (z == 0) ? (-1) : (1);
-  double wt = (((det == 1) || (det == 2)) && (depth == 1)) ? theRecNumber->getLayer0Wt(det, phi, zside) : 1.0;
+  HcalDetId hid;
+  hid = relabel(testId);
+  double wt = (((hid.subdet() == HcalSubdetector::HcalBarrel) || (hid.subdet() == HcalEndcap)) && (hid.depth() == 1)) ? 
+              theRecNumber->getLayer0Wt(hid.subdet(), hid.iphi(), hid.zside()) : 1.0;
 #ifdef EDM_ML_DEBUG
-  edm::LogVerbatim("HcalSim") << "EnergyWT::det: " << det << " z: " << z << ":" << zside << " depth: " << depth
-                              << " ieta: " << eta << " iphi: " << phi << " layer: " << layer << " wt " << wt;
+  edm::LogVerbatim("HcalSim") << "EnergyWT::det: " << hid.subdet() << " zside: " << hid.zside() << " depth: " << hid.depth()
+                              << " ieta: " << hid.ieta() << " iphi: " << hid.iphi() << " wt " << wt;
 #endif
   return wt;
 }
