@@ -48,6 +48,7 @@ public:
   static constexpr float invDeltaTSiPM_ = 2.0;
   static double analyticPulseShapeSiPMHO(double t);
   static double analyticPulseShapeSiPMHE(double t);
+  static double parametricPulseShapeHBHE(double t, unsigned short ieta, unsigned short depth);
   static constexpr float Y11RANGE_ = nBinsSiPM_;
   static constexpr float Y11MAX203_ = 0.04;
   static constexpr float Y11MAX206_ = 0.08;
@@ -111,8 +112,13 @@ private:
   void computeSiPMShapeData2017();
   void computeSiPMShapeData2018();
   void computeSiPMShapeMCRecoRun3();
+  void computeParametricShape2023(unsigned int ieta, unsigned int depth);
   Shape hpdShape_, hfShape_, siPMShapeHO_;
   Shape siPMShapeData2017_, siPMShapeData2018_, siPMShapeMCRecoRun3_;
+
+  // TODO here - should this be an Shape marametricShape2023_[ieta][depth]?
+  Shape parametricShape2023_[16][4]; //indices are depth-1, |ieta|-1
+
   Shape hpdShape_v2, hpdShapeMC_v2;
   Shape hpdShape_v3, hpdShapeMC_v3;
   Shape hpdBV30Shape_v2, hpdBV30ShapeMC_v2;

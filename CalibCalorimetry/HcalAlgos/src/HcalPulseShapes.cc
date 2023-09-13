@@ -125,6 +125,12 @@ Reco  MC
   computeSiPMShapeData2017();
   computeSiPMShapeData2018();
   computeSiPMShapeMCRecoRun3();
+  for(unsigned int depth=1; depth<5; depth++) {
+    for(unsigned int ieta=1; ieta<17; ieta++) {
+      std::cout << "about to populate shape" << std::endl;
+      computeParametricShape2023(ieta, depth);
+    }
+  }
 
   theShapes[201] = &siPMShapeHO_;
   theShapes[202] = theShapes[201];
@@ -135,6 +141,138 @@ Reco  MC
   theShapes[208] = &siPMShapeMCRecoRun3_;
   theShapes[301] = &hfShape_;
   //theShapes[401] = new CaloCachedShapeIntegrator(&theZDCShape);
+  
+  theShapes[3]    = &parametricShape2023_[0][0];
+  theShapes[35]   = &parametricShape2023_[0][1];
+  theShapes[67]   = &parametricShape2023_[0][2];
+  theShapes[127]  = &parametricShape2023_[0][3];
+  theShapes[5]    = &parametricShape2023_[1][0];
+  theShapes[37]   = &parametricShape2023_[1][1];
+  theShapes[69]   = &parametricShape2023_[1][2];
+  theShapes[129]  = &parametricShape2023_[1][3];
+  theShapes[7]    = &parametricShape2023_[2][0];
+  theShapes[39]   = &parametricShape2023_[2][1];
+  theShapes[71]   = &parametricShape2023_[2][2];
+  theShapes[131]  = &parametricShape2023_[2][3];
+  theShapes[9]    = &parametricShape2023_[3][0];
+  theShapes[41]   = &parametricShape2023_[3][1];
+  theShapes[73]   = &parametricShape2023_[3][2];
+  theShapes[133]  = &parametricShape2023_[3][3];
+  theShapes[11]   = &parametricShape2023_[4][0];
+  theShapes[43]   = &parametricShape2023_[4][1];
+  theShapes[75]   = &parametricShape2023_[4][2];
+  theShapes[135]  = &parametricShape2023_[4][3];
+  theShapes[13]   = &parametricShape2023_[5][0];
+  theShapes[45]   = &parametricShape2023_[5][1];
+  theShapes[77]   = &parametricShape2023_[5][2];
+  theShapes[137]  = &parametricShape2023_[5][3];
+  theShapes[15]   = &parametricShape2023_[6][0];
+  theShapes[47]   = &parametricShape2023_[6][1];
+  theShapes[79]   = &parametricShape2023_[6][2];
+  theShapes[139]  = &parametricShape2023_[6][3];
+  theShapes[17]   = &parametricShape2023_[7][0];
+  theShapes[49]   = &parametricShape2023_[7][1];
+  std::cout<<"test pulse shape:" << std::endl;
+  for(int i=0; i<250; ++i) std::cout << parametricShape2023_[7][1](i) <<", ";
+  std::cout << std::endl;
+  theShapes[81]   = &parametricShape2023_[7][2];
+  theShapes[141]  = &parametricShape2023_[7][3];
+  theShapes[19]   = &parametricShape2023_[8][0];
+  theShapes[51]   = &parametricShape2023_[8][1];
+  theShapes[83]   = &parametricShape2023_[8][2];
+  theShapes[143]  = &parametricShape2023_[8][3];
+  theShapes[21]   = &parametricShape2023_[9][0];
+  theShapes[53]   = &parametricShape2023_[9][1];
+  theShapes[85]   = &parametricShape2023_[9][2];
+  theShapes[145]  = &parametricShape2023_[9][3];
+  theShapes[23]   = &parametricShape2023_[10][0];
+  theShapes[55]   = &parametricShape2023_[10][1];
+  theShapes[87]   = &parametricShape2023_[10][2];
+  theShapes[147]  = &parametricShape2023_[10][3];
+  theShapes[25]   = &parametricShape2023_[11][0];
+  theShapes[57]   = &parametricShape2023_[11][1];
+  theShapes[89]   = &parametricShape2023_[11][2];
+  theShapes[149]  = &parametricShape2023_[11][3];
+  theShapes[27]   = &parametricShape2023_[12][0];
+  theShapes[59]   = &parametricShape2023_[12][1];
+  theShapes[91]   = &parametricShape2023_[12][2];
+  theShapes[151]  = &parametricShape2023_[12][3];
+  theShapes[29]   = &parametricShape2023_[13][0];
+  theShapes[61]   = &parametricShape2023_[13][1];
+  theShapes[93]   = &parametricShape2023_[13][2];
+  theShapes[153]  = &parametricShape2023_[13][3];
+  theShapes[31]   = &parametricShape2023_[14][0];
+  theShapes[63]   = &parametricShape2023_[14][1];
+  theShapes[95]   = &parametricShape2023_[14][2];
+  theShapes[155]  = &parametricShape2023_[14][3];
+  theShapes[33]   = &parametricShape2023_[15][0];
+  theShapes[65]   = &parametricShape2023_[15][1];
+  theShapes[97]   = &parametricShape2023_[15][2];
+  theShapes[305]  = &parametricShape2023_[15][3];
+  theShapes[4]    = &parametricShape2023_[0][0];
+  theShapes[36]   = &parametricShape2023_[0][1];
+  theShapes[68]   = &parametricShape2023_[0][2];
+  theShapes[128]  = &parametricShape2023_[0][3];
+  theShapes[6]    = &parametricShape2023_[1][0];
+  theShapes[38]   = &parametricShape2023_[1][1];
+  theShapes[70]   = &parametricShape2023_[1][2];
+  theShapes[130]  = &parametricShape2023_[1][3];
+  theShapes[8]    = &parametricShape2023_[2][0];
+  theShapes[40]   = &parametricShape2023_[2][1];
+  theShapes[72]   = &parametricShape2023_[2][2];
+  theShapes[132]  = &parametricShape2023_[2][3];
+  theShapes[10]   = &parametricShape2023_[3][0];
+  theShapes[42]   = &parametricShape2023_[3][1];
+  theShapes[74]   = &parametricShape2023_[3][2];
+  theShapes[134]  = &parametricShape2023_[3][3];
+  theShapes[12]   = &parametricShape2023_[4][0];
+  theShapes[44]   = &parametricShape2023_[4][1];
+  theShapes[76]   = &parametricShape2023_[4][2];
+  theShapes[136]  = &parametricShape2023_[4][3];
+  theShapes[14]   = &parametricShape2023_[5][0];
+  theShapes[46]   = &parametricShape2023_[5][1];
+  theShapes[78]   = &parametricShape2023_[5][2];
+  theShapes[138]  = &parametricShape2023_[5][3];
+  theShapes[16]   = &parametricShape2023_[6][0];
+  theShapes[48]   = &parametricShape2023_[6][1];
+  theShapes[80]   = &parametricShape2023_[6][2];
+  theShapes[140]  = &parametricShape2023_[6][3];
+  theShapes[18]   = &parametricShape2023_[7][0];
+  theShapes[50]   = &parametricShape2023_[7][1];
+  theShapes[82]   = &parametricShape2023_[7][2];
+  theShapes[142]  = &parametricShape2023_[7][3];
+  theShapes[20]   = &parametricShape2023_[8][0];
+  theShapes[52]   = &parametricShape2023_[8][1];
+  theShapes[84]   = &parametricShape2023_[8][2];
+  theShapes[144]  = &parametricShape2023_[8][3];
+  theShapes[22]   = &parametricShape2023_[9][0];
+  theShapes[54]   = &parametricShape2023_[9][1];
+  theShapes[86]   = &parametricShape2023_[9][2];
+  theShapes[146]  = &parametricShape2023_[9][3];
+  theShapes[24]   = &parametricShape2023_[10][0];
+  theShapes[56]   = &parametricShape2023_[10][1];
+  theShapes[88]   = &parametricShape2023_[10][2];
+  theShapes[148]  = &parametricShape2023_[10][3];
+  theShapes[26]   = &parametricShape2023_[11][0];
+  theShapes[58]   = &parametricShape2023_[11][1];
+  theShapes[90]   = &parametricShape2023_[11][2];
+  theShapes[150]  = &parametricShape2023_[11][3];
+  theShapes[28]   = &parametricShape2023_[12][0];
+  theShapes[60]   = &parametricShape2023_[12][1];
+  theShapes[92]   = &parametricShape2023_[12][2];
+  theShapes[152]  = &parametricShape2023_[12][3];
+  theShapes[30]   = &parametricShape2023_[13][0];
+  theShapes[62]   = &parametricShape2023_[13][1];
+  theShapes[94]   = &parametricShape2023_[13][2];
+  theShapes[154]  = &parametricShape2023_[13][3];
+  theShapes[32]   = &parametricShape2023_[14][0];
+  theShapes[64]   = &parametricShape2023_[14][1];
+  theShapes[96]   = &parametricShape2023_[14][2];
+  theShapes[156]  = &parametricShape2023_[14][3];
+  theShapes[34]   = &parametricShape2023_[15][0];
+  theShapes[66]   = &parametricShape2023_[15][1];
+  theShapes[98]   = &parametricShape2023_[15][2];
+  theShapes[306]  = &parametricShape2023_[15][3];
 }
 
 HcalPulseShapes::HcalPulseShapes(edm::ConsumesCollector iC) : HcalPulseShapes() {
@@ -273,6 +411,28 @@ void HcalPulseShapes::computeHFShape() {
     hfShape_.setShapeBin(j, ntmp[j]);
   }
 }
+
+
+void HcalPulseShapes::computeParametricShape2023(unsigned int ieta, unsigned int depth) {
+
+  unsigned int nbin = 250;
+
+  std::vector<double> nt;
+  for(unsigned int j = 0; j < nbin; ++j) {
+    nt.push_back(parametricPulseShapeHBHE((double)j, ieta, depth));
+  }
+
+  double norm = 0.;
+  for (unsigned int j = 0; j < nbin; ++j) {
+    norm += (nt[j] > 0) ? nt[j] : 0.;
+  }
+
+  for (unsigned int j = 0; j < nbin; ++j) {
+    nt[j] /= norm;
+  }
+  parametricShape2023_[ieta-1][depth-1] = HcalPulseShape(nt, nbin);
+}
+
 void HcalPulseShapes::computeSiPMShapeMCRecoRun3() {
   //modified shape 206
   //7.2 ns shift in 206
@@ -578,6 +738,29 @@ double HcalPulseShapes::analyticPulseShapeSiPMHE(double t) {
   double A2(1.855 / 6.94419), sigma2_shape(0.8132), theta2_loc(7.025), m2_scale(12.29);
   return onePulse(t, A1, sigma1_shape, theta1_loc, m1_scale) + onePulse(t, A2, sigma2_shape, theta2_loc, m2_scale);
 }
+
+
+double HcalPulseShapes::parametricPulseShapeHBHE(double t, unsigned short ieta, unsigned short depth) {
+  // from phase scan 2023
+  //Formula: ((x>0)*(x<=[0]))*(1-TMath::Exp(-[1]*x))+((x>[0]))*(1-TMath::Exp(-[1]*[0]))*TMath::Exp([1]*([0]-x))
+  static constexpr float tmax[4][16] = {{  4.0374,  4.6771,  5.3042,  5.9187,  6.5207,  7.1100,  7.6867,  8.2508,  8.8023,  9.3413,  9.8676, 10.3813, 10.8825, 11.3710, 11.8469,12.3103},
+                       {  3.4697,  4.0171,  4.5703,  5.1293,  5.6942,  6.2649,  6.8413,  7.4237,  8.0118,  8.6057,  9.2055,  9.8110, 10.4224, 11.0396, 11.6627,12.2915},
+                       {  3.1216,  3.9394,  4.7352,  5.5091,  6.2611,  6.9911,  7.6992,  8.3854,  9.0497,  9.6920, 10.3124, 10.9109, 11.4874, 12.0421, 12.5748,13.0856},
+                       {  1.0395,  2.3907,  3.6817,  4.9124,  6.0829,  7.1931,  8.2430,  9.2327, 10.1621, 11.0312, 11.8401, 12.5887, 13.2770, 13.9051, 14.4729,14.9805}
+                      };
+  static constexpr float k[4][16] =    {{  0.0517,  0.0531,  0.0543,  0.0554,  0.0565,  0.0574,  0.0582,  0.0589,  0.0596,  0.0601,  0.0605,  0.0608,  0.0610,  0.0611,  0.0610,0.0609},
+                       {  0.0538,  0.0539,  0.0540,  0.0541,  0.0542,  0.0544,  0.0545,  0.0546,  0.0548,  0.0549,  0.0551,  0.0552,  0.0554,  0.0556,  0.0558,0.0560},
+                       {  0.0519,  0.0519,  0.0520,  0.0521,  0.0523,  0.0525,  0.0528,  0.0531,  0.0535,  0.0539,  0.0544,  0.0549,  0.0554,  0.0560,  0.0566,0.0573},
+                       {  0.0490,  0.0491,  0.0492,  0.0494,  0.0497,  0.0501,  0.0505,  0.0510,  0.0516,  0.0522,  0.0529,  0.0537,  0.0546,  0.0555,  0.0565,0.0576}
+                      };
+  // TODO here: this is just to replicate the phase of pulse shape 207:
+  t-=8.;
+
+  return  ((t>0)*(t<=tmax[depth-1][ieta-1]))*(1-TMath::Exp(-1*k[depth-1][ieta-1]*t))+((t>tmax[depth-1][ieta-1]))
+          *(1-TMath::Exp(-1*k[depth-1][ieta-1]*tmax[depth-1][ieta-1]))*TMath::Exp(k[depth-1][ieta-1]*(tmax[depth-1][ieta-1]-t));
+
+}
+
 
 double HcalPulseShapes::generatePhotonTime(CLHEP::HepRandomEngine* engine, unsigned int signalShape) {
   if (signalShape == 206)
