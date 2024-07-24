@@ -4137,7 +4137,7 @@ steps['HcalNanoCalibGap']={'-s':'RAW2DIGI,RECO,USER:DPGAnalysis/HcalNanoAOD/hcal
                          '--geometry' : 'DB:Extended',
                          '--datatier':'NANOAOD',
                          '--eventcontent':'NANOAOD', 
-                         '--customise':'DPGAnalysis/HcalNanoAOD/hcalNano_cff.customiseHcalCalib', 
+                         '--customise':'DPGAnalysis/HcalNanoAOD/customiseHcalCalib_cff.customiseHcalCalib', 
                          '--processName': 'USER'}
                          
 #################################################################################
